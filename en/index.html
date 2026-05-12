@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn DeepSeek TUI — the terminal AI coding assistant. Master agent modes, tools, skills, and parallel workflows.">
+  <meta name="keywords" content="DeepSeek TUI, terminal AI, coding assistant, AI agent, tutorial">
+  <title>DeepSeek TUI Tutorial — Master Terminal AI Development</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/layout.css">
+</head>
+<body class="page-full">
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <a href="/en/" class="header-logo">
+          <span class="logo-icon">🐋</span>
+          <span>DeepSeek TUI</span><span class="header-tagline">Terminal AI Agent</span>
+        </a>
+      </div>
+      <div class="header-right">
+        <div class="lang-switch">
+          <a href="/en/" class="active" aria-current="page">EN</a>
+          <span class="lang-sep">/</span>
+          <a href="/zh/">中文</a>
+        </div>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+          <span class="theme-icon">🌙</span>
+          <span class="theme-label">Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <main>
+    <section class="hero">
+      <span class="hero-badge">v0.8.31</span>
+      <h1>Master <span class="hero-gradient">DeepSeek TUI</span></h1>
+      <p class="hero-subtitle">
+        Your terminal-based AI pair programmer. Decompose complex tasks, orchestrate sub-agents,
+        and build production software — all from the command line.
+      </p>
+      <div class="hero-actions">
+        <a href="/en/getting-started.html" class="btn btn-primary">🚀 Get Started</a>
+        <a href="/en/core-concepts.html" class="btn btn-outline">📖 Core Concepts</a>
+      </div>
+    </section>
+
+    <!-- Feature Cards -->
+    <div class="container">
+      <section class="features-section">
+        <div class="section-title">
+          <h2>What You'll Learn</h2>
+          <p>A complete curriculum from first launch to advanced multi-agent orchestration</p>
+        </div>
+
+        <div class="card-grid">
+          <a href="/en/getting-started.html" class="card">
+            <div class="card-icon">🚀</div>
+            <div class="card-title">Getting Started</div>
+            <div class="card-desc">Install DeepSeek TUI on Linux, macOS, or Windows/WSL. Configure your environment, write your first prompt, and understand the workspace model.</div>
+          </a>
+
+          <a href="/en/core-concepts.html" class="card">
+            <div class="card-icon">🧠</div>
+            <div class="card-title">Core Concepts</div>
+            <div class="card-desc">Understand agent modes (Plan vs YOLO), thinking budgets, context windows, and the decomposition philosophy that drives effective AI collaboration.</div>
+          </a>
+
+          <a href="/en/features.html" class="card">
+            <div class="card-icon">🔧</div>
+            <div class="card-title">Features Guide</div>
+            <div class="card-desc">Deep dive into sub-agents, parallel execution, RLM for long inputs, skills, checklists, tasks, and GitHub integration.</div>
+          </a>
+
+          <a href="/en/hands-on.html" class="card">
+            <div class="card-icon">🛠️</div>
+            <div class="card-title">Hands-On Tutorial</div>
+            <div class="card-desc">End-to-end project walkthrough: build and deploy a complete portfolio website from scratch with DeepSeek TUI.</div>
+          </a>
+
+          <a href="/en/best-practices.html" class="card">
+            <div class="card-icon">💡</div>
+            <div class="card-title">Best Practices</div>
+            <div class="card-desc">Production-tested patterns: verification-first development, context management, parallel-by-default heuristics, and effective prompt engineering.</div>
+          </a>
+        </div>
+      </section>
+    </div>
+
+    <!-- Quick Start Section -->
+    <div class="container">
+      <section style="padding: var(--space-16) 0;">
+        <div class="section-title">
+          <h2>Quick Start</h2>
+          <p>One command to begin your journey</p>
+        </div>
+
+        <div class="code-example">
+          <div class="code-example-header">
+            <span class="code-label">Terminal</span>
+            <button class="copy-btn" onclick="navigator.clipboard.writeText('deepseek')">Copy</button>
+          </div>
+          <pre><code>$ deepseek</code></pre>
+        </div>
+
+        <div class="callout callout-info" style="margin-top: var(--space-6);">
+          <div class="callout-title">💡 First session tip</div>
+          <p>Use <strong>Agent Mode</strong> (default) for daily work — the agent creates plans and asks for approval at key operations. Switch to <strong>Plan Mode</strong> (read-only) for safe exploration of unfamiliar code. Press <kbd>Tab</kbd> to cycle modes.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>Built with ❤️ for the DeepSeek community · <a href="https://github.com/deepseek-ai">GitHub</a></p>
+    </div>
+  </footer>
+
+  <script src="/js/theme.js"></script>
+  <script src="/js/nav.js"></script>
+</body>
+</html>

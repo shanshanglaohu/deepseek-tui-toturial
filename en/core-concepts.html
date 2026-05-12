@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DeepSeek TUI core concepts: agent modes, thinking budgets, decomposition philosophy, and context window management.">
+  <title>Core Concepts — DeepSeek TUI Tutorial</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/layout.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <button id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+          <span class="nav-toggle-icon">☰</span>
+        </button>
+        <a href="/en/" class="header-logo">
+          <span class="logo-icon">🐋</span><span>DeepSeek TUI</span><span class="header-tagline">Terminal AI Agent</span>
+        </a>
+      </div>
+      <div class="header-right">
+        <div class="lang-switch">
+          <a href="/en/core-concepts.html" class="active" aria-current="page">EN</a>
+          <span class="lang-sep">/</span>
+          <a href="/zh/core-concepts.html">中文</a>
+        </div>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+          <span class="theme-icon">🌙</span><span class="theme-label">Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <aside id="sidebar" class="sidebar">
+      <nav class="sidebar-nav" aria-label="Section navigation">
+        <div class="nav-section">
+          <div class="nav-section-title">Core Concepts</div>
+          <ul>
+            <li><a href="/en/core-concepts.html" class="active">Overview</a></li>
+            <li><a href="#modes">Agent Modes</a></li>
+            <li><a href="#auto-mode">Auto Mode</a></li>
+            <li><a href="#thinking">Thinking Budget</a></li>
+            <li><a href="#decomposition">Decomposition Philosophy</a></li>
+            <li><a href="#context">Context &amp; Cache</a></li>
+            <li><a href="#sessions">Session Management</a></li>
+            <li><a href="#tools">Tool System</a></li>
+            <li><a href="#shortcuts">Keyboard Shortcuts</a></li>
+          </ul>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Contents</div>
+          <ul>
+            <li><a href="/en/getting-started.html">Getting Started</a></li>
+            <li><a href="/en/core-concepts.html">Core Concepts</a></li>
+            <li><a href="/en/features.html">Features Guide</a></li>
+            <li><a href="/en/hands-on.html">Hands-On Tutorial</a></li>
+            <li><a href="/en/best-practices.html">Best Practices</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-header">
+        <p class="breadcrumb"><a href="/en/">Home</a> <span class="breadcrumb-sep">/</span> Core Concepts</p>
+        <h1>Core Concepts</h1>
+        <p>Understand the foundational ideas that make DeepSeek TUI an effective AI collaborator.</p>
+      </div>
+
+      <h2 id="modes">Agent Modes</h2>
+      <p>DeepSeek TUI operates in distinct modes that control how autonomously it works. Choosing the right mode for your task is one of the most important decisions you'll make.</p>
+
+      <h3>Plan Mode</h3>
+      <p>Plan mode is <strong>read-only investigation</strong>. The agent can grep, read files, list dirs, fetch URLs — but <strong>never writes files or shells out</strong>. Safe for exploration.</p>
+      <ul>
+        <li><strong>Best for</strong>: codebase exploration, reading docs, unfamiliar projects</li>
+        <li><strong>Behavior</strong>: purely read-only, zero side effects, no file modifications</li>
+        <li><strong>Safety</strong>: highest — no write or execute capability</li>
+      </ul>
+
+      <h3>Agent Mode (Default)</h3>
+      <p>The default multi-step tool-use mode. Shell and side-effectful tools require approval per <code>approval_mode</code> setting.</p>
+      <ul>
+        <li><strong>Best for</strong>: day-to-day development, code changes, running tests</li>
+        <li><strong>Behavior</strong>: creates plans and checklists, asks for approval at key operations</li>
+        <li><strong>Safety</strong>: medium — gated by approval policy</li>
+      </ul>
+
+      <h3>YOLO Mode</h3>
+      <p>YOLO mode grants <strong>full autonomy</strong> — auto-approves everything and enables trust mode, lifting the workspace boundary. Use carefully.</p>
+      <ul>
+        <li><strong>Best for</strong>: well-defined tasks, trusted workflows, rapid iteration</li>
+        <li><strong>Behavior</strong>: moves fast, executes immediately, still creates checklists for visibility</li>
+        <li><strong>Safety</strong>: lower — trust the agent or review changes after the fact</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <div class="callout-title">🔄 Mode Switching</div>
+        <p>Press <kbd>Tab</kbd> to cycle modes (Plan → Agent → YOLO), <kbd>Shift+Tab</kbd> to cycle reasoning effort. Start in Plan mode for unfamiliar code, use Agent mode for daily work, switch to YOLO for clear-cut tasks.</p>
+      </div>
+
+      <h2 id="auto-mode">Auto Mode (Smart Routing)</h2>
+      <p>With <code>--model auto</code>, DeepSeek TUI <strong>automatically selects the best model and reasoning level for each turn</strong> — no manual switching required.</p>
+
+      <h3>How Auto Mode Works</h3>
+      <ol>
+        <li>Before the real request, a lightweight <code>deepseek-v4-flash</code> routing call (thinking off) is made</li>
+        <li>The router inspects your request and context, then selects a concrete model and thinking level</li>
+        <li>Simple questions → Flash + thinking off; coding/debugging/architecture → Pro + high thinking</li>
+      </ol>
+
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">Shell</span></div>
+        <pre><code># Launch with Auto mode
+$ deepseek --model auto
+
+# Or switch during a session
+/model auto</code></pre>
+      </div>
+
+      <div class="callout callout-success">
+        <div class="callout-title">🎯 Recommended for Beginners</div>
+        <p>Not sure which model to pick? Use <code>--model auto</code>. The system decides for you, balancing cost and quality. The TUI header shows which model actually ran.</p>
+      </div>
+
+      <h2 id="thinking">Thinking Budget</h2>
+      <p>DeepSeek V4 models emit <strong>thinking tokens</strong> — internal reasoning that improves output quality but consumes context. DeepSeek TUI lets you control this trade-off.</p>
+
+      <h3>Budget Levels</h3>
+      <table>
+        <tr><th>Task Type</th><th>Depth</th><th>Examples</th></tr>
+        <tr><td>Simple lookup</td><td>Skip</td><td>Reading a file, searching for a pattern</td></tr>
+        <tr><td>Tool output interpretation</td><td>Light</td><td>Verifying a grep result</td></tr>
+        <tr><td>Code generation</td><td>Medium</td><td>Writing a single function</td></tr>
+        <tr><td>Multi-file refactor</td><td>Medium</td><td>Cross-file dependency changes</td></tr>
+        <tr><td>Debugging</td><td>Deep</td><td>Root-cause analysis</td></tr>
+        <tr><td>Architecture design</td><td>Deep</td><td>Trade-offs, constraint modeling</td></tr>
+        <tr><td>Security review</td><td>Deep</td><td>Adversarial reasoning</td></tr>
+      </table>
+
+      <blockquote>
+        <p>Think once, reference many times. Cache conclusions in concise inline summaries rather than re-deriving each turn. This keeps thinking efficient across long sessions.</p>
+      </blockquote>
+
+      <h2 id="decomposition">Decomposition Philosophy</h2>
+      <p>DeepSeek TUI is a <strong>"managed genius"</strong> — it excels at individual tasks, but its superpower is decomposing complex work. Three patterns govern this:</p>
+
+      <h3>PREVIEW — Survey Before Diving</h3>
+      <p>Before tackling a large task, scan directory structure, file headers, and module trees. A 30-second preview prevents hours of wrong-path exploration.</p>
+
+      <h3>CHUNK + Map-Reduce</h3>
+      <p>Split independent sub-tasks, process each in parallel (via sub-agents or parallel tool calls), then synthesize findings into a coherent whole.</p>
+
+      <h3>RECURSIVE Decomposition</h3>
+      <p>When sub-tasks reveal sub-problems: decompose recursively until each leaf is tractable. Maintain the task tree and propagate findings upward.</p>
+
+      <h2 id="context">Context Window &amp; Cache</h2>
+      <p>DeepSeek TUI has a <strong>1M-token context window</strong> with an intelligent prefix-cache system. Understanding how this works helps you get the most out of long sessions.</p>
+
+      <h3>Prefix Cache Economics</h3>
+      <ul>
+        <li>V4 caches shared prefixes at 128-token granularity</li>
+        <li>Cache hits get ~90% cost discount</li>
+        <li>Appending to existing messages preserves the cache</li>
+        <li>Deleting or mutating old messages breaks the cache</li>
+      </ul>
+
+      <h3>Cache Management</h3>
+      <ul>
+        <li><strong>Append, don't reorder</strong> — new context goes at the end</li>
+        <li><strong>Don't paraphrase quoted content</strong> — refer by path or line range</li>
+        <li><strong>Use /compact as a hard reset</strong>, not a tweak</li>
+        <li><strong>Read once, refer back</strong> — re-reading breaks the cache</li>
+      </ul>
+
+      <h2 id="sessions">Session Management</h2>
+      <p>DeepSeek TUI supports <strong>save, resume, and fork</strong> for sessions. Pick up right where you left off — even after closing your terminal or rebooting.</p>
+
+      <h3>Key Operations</h3>
+      <ul>
+        <li><strong>Auto-save</strong>: Every conversation is saved automatically — no manual steps needed</li>
+        <li><strong>Resume</strong>: <code>deepseek resume --last</code> restores your most recent session</li>
+        <li><strong>Fork</strong>: <code>deepseek fork &lt;SESSION_ID&gt;</code> creates a branch at a chosen turn</li>
+        <li><strong>List</strong>: <code>deepseek sessions</code> shows all saved sessions</li>
+        <li><strong>Rollback</strong>: <code>/restore</code> or <code>revert_turn</code> reverts to previous state (doesn't touch your git repo)</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💾 Workspace Isolation</div>
+        <p>Sessions are saved and listed per workspace. Project A's history won't leak into Project B. Each project maintains its own independent session list.</p>
+      </div>
+
+      <h2 id="tools">Tool System</h2>
+      <p>DeepSeek TUI provides a structured toolbox for interacting with your project. All tools operate within the workspace boundary for safety.</p>
+
+      <h3>Tool Categories</h3>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">📁</div>
+          <div class="card-title">File I/O</div>
+          <div class="card-desc">read_file, write_file, edit_file, apply_patch — safe, workspace-constrained file operations.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">💻</div>
+          <div class="card-title">Shell</div>
+          <div class="card-desc">exec_shell, task_shell_start — run commands, tests, builds, and long-running processes.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔍</div>
+          <div class="card-title">Search</div>
+          <div class="card-desc">grep_files, file_search, web_search — find code patterns, files, and web resources.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📋</div>
+          <div class="card-title">Planning</div>
+          <div class="card-desc">update_plan, checklist_write — structured task tracking with visible progress.</div>
+        </div>
+      </div>
+
+      <h3>Parallel-First Heuristic</h3>
+      <p>Before firing any tool, scan your checklist: is there another tool you could run concurrently? The dispatcher runs parallel tool calls simultaneously — serializing independent operations wastes time and context.</p>
+
+      <h2 id="shortcuts">Keyboard Shortcuts</h2>
+      <p>Master these shortcuts to dramatically speed up your workflow:</p>
+
+      <table>
+        <tr><th>Key</th><th>Action</th></tr>
+        <tr><td><kbd>Tab</kbd></td><td>Complete commands/mentions; queue follow-up while running; otherwise cycle mode</td></tr>
+        <tr><td><kbd>Shift+Tab</kbd></td><td>Cycle reasoning effort: off → high → max</td></tr>
+        <tr><td><kbd>F1</kbd></td><td>Searchable help overlay</td></tr>
+        <tr><td><kbd>Esc</kbd></td><td>Back / dismiss</td></tr>
+        <tr><td><kbd>Ctrl+K</kbd></td><td>Command palette</td></tr>
+        <tr><td><kbd>Ctrl+R</kbd></td><td>Resume an earlier session</td></tr>
+        <tr><td><kbd>Alt+R</kbd></td><td>Search prompt history and recover cleared drafts</td></tr>
+        <tr><td><kbd>Ctrl+S</kbd></td><td>Stash current draft (<code>/stash list</code> to view, <code>/stash pop</code> to recover)</td></tr>
+        <tr><td><kbd>@path</kbd></td><td>Attach file/directory context in the composer</td></tr>
+      </table>
+
+      <nav class="page-nav">
+        <a href="/en/getting-started.html" class="page-nav-prev">Getting Started</a>
+        <a href="/en/features.html" class="page-nav-next">Features Guide</a>
+      </nav>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>Built with ❤️ for the DeepSeek community · <a href="https://github.com/deepseek-ai">GitHub</a></p>
+    </div>
+  </footer>
+
+  <script src="/js/theme.js"></script>
+  <script src="/js/nav.js"></script>
+</body>
+</html>

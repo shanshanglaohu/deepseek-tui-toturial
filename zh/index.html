@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="学习 DeepSeek TUI —— 终端 AI 编程助手。掌握 Agent 模式、工具系统、技能和并行工作流。">
+  <meta name="keywords" content="DeepSeek TUI, 终端AI, 编程助手, AI代理, 教程">
+  <title>DeepSeek TUI 教程 — 掌握终端 AI 开发</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/layout.css">
+</head>
+<body class="page-full">
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <a href="/zh/" class="header-logo">
+          <span class="logo-icon">🐋</span>
+          <span>DeepSeek TUI</span><span class="header-tagline">终端 AI 代理</span>
+        </a>
+      </div>
+      <div class="header-right">
+        <div class="lang-switch">
+          <a href="/en/">EN</a>
+          <span class="lang-sep">/</span>
+          <a href="/zh/" class="active" aria-current="page">中文</a>
+        </div>
+        <button id="theme-toggle" class="theme-toggle" aria-label="切换深色模式">
+          <span class="theme-icon">🌙</span>
+          <span class="theme-label">深色</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <main>
+    <section class="hero">
+      <span class="hero-badge">v0.8.31</span>
+      <h1>掌握 <span class="hero-gradient">DeepSeek TUI</span></h1>
+      <p class="hero-subtitle">
+        你的终端 AI 结对编程伙伴。分解复杂任务、调度子代理、构建生产级软件 —— 一切尽在命令行。
+      </p>
+      <div class="hero-actions">
+        <a href="/zh/getting-started.html" class="btn btn-primary">🚀 快速入门</a>
+        <a href="/zh/core-concepts.html" class="btn btn-outline">📖 核心概念</a>
+      </div>
+    </section>
+
+    <!-- Feature Cards -->
+    <div class="container">
+      <section class="features-section">
+        <div class="section-title">
+          <h2>学习路径</h2>
+          <p>从首次启动到高级多代理编排的完整教程</p>
+        </div>
+
+        <div class="card-grid">
+          <a href="/zh/getting-started.html" class="card">
+            <div class="card-icon">🚀</div>
+            <div class="card-title">快速入门</div>
+            <div class="card-desc">在 Linux、macOS 或 Windows/WSL 上安装 DeepSeek TUI。配置环境、编写第一个提示词，理解工作空间模型。</div>
+          </a>
+
+          <a href="/zh/core-concepts.html" class="card">
+            <div class="card-icon">🧠</div>
+            <div class="card-title">核心概念</div>
+            <div class="card-desc">理解 Agent 模式（Plan vs YOLO）、思考预算、上下文窗口，以及驱动高效 AI 协作的分解哲学。</div>
+          </a>
+
+          <a href="/zh/features.html" class="card">
+            <div class="card-icon">🔧</div>
+            <div class="card-title">功能指南</div>
+            <div class="card-desc">深入探索子代理、并行执行、RLM 长文本处理、技能系统、清单任务和 GitHub 集成。</div>
+          </a>
+
+          <a href="/zh/hands-on.html" class="card">
+            <div class="card-icon">🛠️</div>
+            <div class="card-title">实战教程</div>
+            <div class="card-desc">端到端项目实战：用 DeepSeek TUI 从零构建并部署一个完整的个人作品集网站。</div>
+          </a>
+
+          <a href="/zh/best-practices.html" class="card">
+            <div class="card-icon">💡</div>
+            <div class="card-title">最佳实践</div>
+            <div class="card-desc">经过生产验证的模式：验证优先开发、上下文管理、并行优先策略和高效提示词工程。</div>
+          </a>
+        </div>
+      </section>
+    </div>
+
+    <!-- Quick Start Section -->
+    <div class="container">
+      <section style="padding: var(--space-16) 0;">
+        <div class="section-title">
+          <h2>快速开始</h2>
+          <p>一条命令开启学习之旅</p>
+        </div>
+
+        <div class="code-example">
+          <div class="code-example-header">
+            <span class="code-label">终端</span>
+            <button class="copy-btn" onclick="navigator.clipboard.writeText('deepseek')">复制</button>
+          </div>
+          <pre><code>$ deepseek</code></pre>
+        </div>
+
+        <div class="callout callout-info" style="margin-top: var(--space-6);">
+          <div class="callout-title">💡 首次使用建议</div>
+          <p>日常开发使用 <strong>Agent 模式</strong>（默认）——Agent 会创建计划并在关键操作前请求审批。安全探索不熟悉的代码时切换到 <strong>Plan 模式</strong>（只读）。按 <kbd>Tab</kbd> 循环切换模式。</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>为 DeepSeek 社区用 ❤️ 构建 · <a href="https://github.com/deepseek-ai">GitHub</a></p>
+    </div>
+  </footer>
+
+  <script src="/js/theme.js"></script>
+  <script src="/js/nav.js"></script>
+</body>
+</html>

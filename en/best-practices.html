@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DeepSeek TUI best practices: verification-first, context management, prompt engineering, and effective workflows.">
+  <title>Best Practices — DeepSeek TUI Tutorial</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/layout.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <button id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+          <span class="nav-toggle-icon">☰</span>
+        </button>
+        <a href="/en/" class="header-logo"><span class="logo-icon">🐋</span><span>DeepSeek TUI</span><span class="header-tagline">Terminal AI Agent</span></a>
+      </div>
+      <div class="header-right">
+        <div class="lang-switch">
+          <a href="/en/best-practices.html" class="active" aria-current="page">EN</a>
+          <span class="lang-sep">/</span>
+          <a href="/zh/best-practices.html">中文</a>
+        </div>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+          <span class="theme-icon">🌙</span><span class="theme-label">Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <aside id="sidebar" class="sidebar">
+      <nav class="sidebar-nav" aria-label="Section navigation">
+        <div class="nav-section">
+          <div class="nav-section-title">Best Practices</div>
+          <ul>
+            <li><a href="/en/best-practices.html" class="active">Overview</a></li>
+            <li><a href="#verification">Verification-First</a></li>
+            <li><a href="#prompting">Prompt Engineering</a></li>
+            <li><a href="#context-management">Context Management</a></li>
+            <li><a href="#delegation">Delegation Patterns</a></li>
+            <li><a href="#modes-guide">Mode Selection</a></li>
+            <li><a href="#cost-management">Cost Management</a></li>
+            <li><a href="#pitfalls">Common Pitfalls</a></li>
+          </ul>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Contents</div>
+          <ul>
+            <li><a href="/en/getting-started.html">Getting Started</a></li>
+            <li><a href="/en/core-concepts.html">Core Concepts</a></li>
+            <li><a href="/en/features.html">Features Guide</a></li>
+            <li><a href="/en/hands-on.html">Hands-On Tutorial</a></li>
+            <li><a href="/en/best-practices.html">Best Practices</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-header">
+        <p class="breadcrumb"><a href="/en/">Home</a> <span class="breadcrumb-sep">/</span> Best Practices</p>
+        <h1>Best Practices</h1>
+        <p>Production-tested patterns that make DeepSeek TUI sessions productive, safe, and efficient.</p>
+      </div>
+
+      <h2 id="verification">Verification-First Development</h2>
+      <p>The single most important practice: <strong>verify before proceeding</strong>. After every tool call that produces a result you'll act on, confirm the output matches expectations.</p>
+
+      <h3>Verification Checklist</h3>
+      <ul>
+        <li><strong>File reads</strong>: Confirm line numbers match what you're about to patch</li>
+        <li><strong>Shell commands</strong>: Check stdout, not just exit code</li>
+        <li><strong>Search results</strong>: Confirm the match is what you expected (false positives happen)</li>
+        <li><strong>Sub-agent results</strong>: Cross-check one finding against a direct read</li>
+      </ul>
+
+      <div class="callout callout-danger">
+        <div class="callout-title">🚫 Don't trust memory</div>
+        <p>Never patch from memory. Live tool output is the only source of truth. Memory fails; tool output doesn't lie.</p>
+      </div>
+
+      <h2 id="prompting">Prompt Engineering</h2>
+      <p>DeepSeek TUI responds to <strong>structured, concrete instructions</strong>. Vague prompts produce vague results. Here's what works:</p>
+
+      <h3>Effective Patterns</h3>
+      <ul>
+        <li><strong>Name the action</strong>: "Reading the module tree" not "Let me take a look"</li>
+        <li><strong>Specify the output</strong>: "Return a list of 3-5 bullet points" not "Tell me about..."</li>
+        <li><strong>Constrain scope</strong>: "In src/auth/ only" not "Find all the bugs"</li>
+        <li><strong>Give context</strong>: "After the refactor in PR #42..." not "Fix this code"</li>
+      </ul>
+
+      <h3>Vague vs. Specific: Real Examples</h3>
+      <table>
+        <tr><th>❌ Vague Prompt</th><th>✅ Specific Prompt</th></tr>
+        <tr><td>"Make me a website"</td><td>"Create a single-page portfolio site with navbar, hero section, skill cards, project showcase, and contact form. Dark theme, responsive, pure HTML/CSS/JS."</td></tr>
+        <tr><td>"Fix this bug"</td><td>"The form submit button doesn't respond when clicked. Check js/form.js for the submit event handler — verify it correctly prevents default behavior."</td></tr>
+        <tr><td>"Optimize performance"</td><td>"Homepage loads in 3.2 seconds. Check which resources block rendering. Prioritize images >100KB and CSS files first."</td></tr>
+        <tr><td>"Refactor the code"</td><td>"Extract the 5 date utility functions from src/utils.js into a separate dates.js module. Keep the existing export interface unchanged. Update all imports."</td></tr>
+      </table>
+
+      <h3>Prompt Structure for Complex Tasks</h3>
+      <ol>
+        <li><strong>Goal</strong>: One-line objective</li>
+        <li><strong>Constraints</strong>: What's off-limits</li>
+        <li><strong>Context</strong>: Relevant files, PRs, decisions</li>
+        <li><strong>Expected output</strong>: What success looks like</li>
+      </ol>
+
+      <h2 id="context-management">Context Management</h2>
+      <p>Your 1M-token window is generous but not infinite. Smart context management keeps sessions productive for hours.</p>
+
+      <h3>The Cache-Aware Workflow</h3>
+      <ul>
+        <li><strong>Batch reads</strong>: Read 3+ files in one turn instead of sequentially</li>
+        <li><strong>Batch tool calls</strong>: grep + read + git_status in one turn</li>
+        <li><strong>Append, don't rewrite</strong>: New findings go at the end</li>
+        <li><strong>Reference by path</strong>: "In auth.rs:42" not "Here's the code again..."</li>
+      </ul>
+
+      <h3>When to /compact</h3>
+      <p>Suggest compaction when context use creeps above 80%. Treat it as a hard reset, not a tweak. The system preserves working files and recent decisions.</p>
+
+      <div class="callout callout-warning">
+        <div class="callout-title">⚠️ Cache decay</div>
+        <p>Monitor the cache hit % chip. Red (<40%) for several turns = consolidate. Yellow (<80%) = watch. Green = healthy.</p>
+      </div>
+
+      <h2 id="delegation">Delegation Patterns</h2>
+
+      <h3>When to Delegate to Sub-Agents</h3>
+      <p>Use sub-agents for <strong>independent, parallelizable work</strong>. Good candidates:</p>
+      <ul>
+        <li>Investigating 3+ independent files or modules</li>
+        <li>Parallel implementation of independent leaf tasks from a plan</li>
+        <li>Running code review alongside your main work</li>
+      </ul>
+
+      <h3>Anti-Patterns</h3>
+      <ul>
+        <li><strong>Don't delegate single-file reads</strong>: A direct read is faster</li>
+        <li><strong>Don't pre-spawn dependent work</strong>: Wait for step A's output before spawning step B</li>
+        <li><strong>Don't forget to synthesize</strong>: Sub-agent output needs integration</li>
+      </ul>
+
+      <h2 id="modes-guide">Mode Selection Guide</h2>
+      <table>
+        <tr><th>Scenario</th><th>Recommended Mode</th><th>Rationale</th></tr>
+        <tr><td>Exploring unfamiliar codebase</td><td>Plan</td><td>You need visibility before changes</td></tr>
+        <tr><td>Small, well-defined bug fix</td><td>YOLO</td><td>Low risk, clear success criteria</td></tr>
+        <tr><td>Architecture redesign</td><td>Plan</td><td>High impact; review the plan first</td></tr>
+        <tr><td>Writing tests for existing code</td><td>YOLO</td><td>Well-bounded, safety nets exist</td></tr>
+        <tr><td>Security-sensitive changes</td><td>Plan</td><td>Always review before executing</td></tr>
+        <tr><td>Repeated, trusted workflow</td><td>YOLO</td><td>Trust is earned, then used</td></tr>
+      </table>
+
+      <h2 id="cost-management">Cost Management</h2>
+      <p>While DeepSeek TUI is inexpensive, long sessions and many sub-agents can add up. Here's how to keep costs under control:</p>
+
+      <h3>Cost Optimization Strategies</h3>
+      <ul>
+        <li><strong>Use Auto mode</strong>: Simple questions automatically use Flash (cheap), complex ones use Pro</li>
+        <li><strong>Maximize cache hits</strong>: Append, don't reorder messages — cache hits >80% save ~90% on input costs</li>
+        <li><strong>Match reasoning to task</strong>: File reads need no reasoning (off); coding benefits from high; architecture needs max</li>
+        <li><strong>Batch operations</strong>: Read 3+ files at once instead of one at a time to reduce turn count</li>
+        <li><strong>Limit sub-agent count</strong>: Each sub-agent is an independent API call — keep them necessary</li>
+        <li><strong>Compact regularly</strong>: Compact long sessions at ~80% context to reduce subsequent token consumption</li>
+      </ul>
+
+      <div class="callout callout-success">
+        <div class="callout-title">📊 Typical Cost Reference</div>
+        <p>A medium-complexity coding session (50 turns, with sub-agents) using Flash typically costs $0.05–$0.20. The same work with Pro costs about $0.50–$2.00. The TUI header shows total session cost in real time.</p>
+      </div>
+
+      <h2 id="pitfalls">Common Pitfalls</h2>
+
+      <h3>Overthinking Simple Tasks</h3>
+      <p>Match thinking depth to task complexity. A file read doesn't need deep reasoning. Save deep thinking for debugging and architecture.</p>
+
+      <h3>Serializing Independent Work</h3>
+      <p>If two operations don't depend on each other, batch them. The dispatcher runs parallel tool calls simultaneously. Serializing wastes time and context.</p>
+
+      <h3>Empty Sidebars</h3>
+      <p>The sidebar shows Plan / Todos / Tasks / Agents. When these panels are empty, users have no idea what you're doing. Keep them populated with <code>checklist_write</code> and <code>update_plan</code>.</p>
+
+      <h3>Blindly Following Plans</h3>
+      <p>Re-read your plan after each phase. Does phase 2 still make sense? Update if new information changes the approach. Don't follow a plan drafted before you understood the code.</p>
+
+      <h3>Patch Without Reading</h3>
+      <p>Always <code>read_file</code> before <code>edit_file</code>. Line numbers shift. Code changes between reads. Your memory of a file from 10 turns ago is unreliable.</p>
+
+      <nav class="page-nav">
+        <a href="/en/features.html" class="page-nav-prev">Features Guide</a>
+        <a href="/en/" class="page-nav-next">Home</a>
+      </nav>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>Built with ❤️ for the DeepSeek community · <a href="https://github.com/deepseek-ai">GitHub</a></p>
+    </div>
+  </footer>
+
+  <script src="/js/theme.js"></script>
+  <script src="/js/nav.js"></script>
+</body>
+</html>

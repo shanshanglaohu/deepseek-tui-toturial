@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DeepSeek TUI 最佳实践：验证优先、上下文管理、提示词工程和高效工作流。">
+  <title>最佳实践 — DeepSeek TUI 教程</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/layout.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <button id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="切换导航" aria-expanded="false">
+          <span class="nav-toggle-icon">☰</span>
+        </button>
+        <a href="/zh/" class="header-logo"><span class="logo-icon">🐋</span><span>DeepSeek TUI</span><span class="header-tagline">终端 AI 代理</span></a>
+      </div>
+      <div class="header-right">
+        <div class="lang-switch">
+          <a href="/en/best-practices.html">EN</a>
+          <span class="lang-sep">/</span>
+          <a href="/zh/best-practices.html" class="active" aria-current="page">中文</a>
+        </div>
+        <button id="theme-toggle" class="theme-toggle" aria-label="切换深色模式">
+          <span class="theme-icon">🌙</span><span class="theme-label">深色</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <aside id="sidebar" class="sidebar">
+      <nav class="sidebar-nav" aria-label="章节导航">
+        <div class="nav-section">
+          <div class="nav-section-title">最佳实践</div>
+          <ul>
+            <li><a href="/zh/best-practices.html" class="active">概述</a></li>
+            <li><a href="#verification">验证优先</a></li>
+            <li><a href="#prompting">提示词工程</a></li>
+            <li><a href="#context-management">上下文管理</a></li>
+            <li><a href="#delegation">委托模式</a></li>
+            <li><a href="#modes-guide">模式选择</a></li>
+            <li><a href="#cost-management">成本管理</a></li>
+            <li><a href="#pitfalls">常见陷阱</a></li>
+          </ul>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">目录</div>
+          <ul>
+            <li><a href="/zh/getting-started.html">快速入门</a></li>
+            <li><a href="/zh/core-concepts.html">核心概念</a></li>
+            <li><a href="/zh/features.html">功能指南</a></li>
+            <li><a href="/zh/hands-on.html">实战教程</a></li>
+            <li><a href="/zh/best-practices.html">最佳实践</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-header">
+        <p class="breadcrumb"><a href="/zh/">首页</a> <span class="breadcrumb-sep">/</span> 最佳实践</p>
+        <h1>最佳实践</h1>
+        <p>经过生产验证的模式，让 DeepSeek TUI 会话高效、安全且顺畅。</p>
+      </div>
+
+      <h2 id="verification">验证优先开发</h2>
+      <p>最重要的实践：<strong>行动前先验证</strong>。每次工具调用产生你将依赖的结果后，确认输出符合预期。</p>
+
+      <h3>验证清单</h3>
+      <ul>
+        <li><strong>文件读取</strong>：确认行号与即将修改的内容一致</li>
+        <li><strong>Shell 命令</strong>：检查 stdout，而非仅退出码</li>
+        <li><strong>搜索结果</strong>：确认匹配项是期望的（存在误报）</li>
+        <li><strong>子代理结果</strong>：对一个发现进行直接读取以交叉验证</li>
+      </ul>
+
+      <div class="callout callout-danger">
+        <div class="callout-title">🚫 不要相信记忆</div>
+        <p>永远不要凭记忆打补丁。实时工具输出是唯一的真相来源。记忆不可靠，工具输出不会说谎。</p>
+      </div>
+
+      <h2 id="prompting">提示词工程</h2>
+      <p>DeepSeek TUI 对<strong>结构化、具体化的指令</strong>响应最佳。模糊的提示词产生模糊的结果。以下是有效做法：</p>
+
+      <h3>有效模式</h3>
+      <ul>
+        <li><strong>命名动作</strong>："正在读取模块树"而非"让我看看"</li>
+        <li><strong>指定输出</strong>："返回 3-5 个要点"而非"告诉我关于..."</li>
+        <li><strong>约束范围</strong>："仅在 src/auth/ 中"而非"找出所有 bug"</li>
+        <li><strong>提供上下文</strong>："在 PR #42 的重构之后..."而非"修复这段代码"</li>
+      </ul>
+
+      <h3>模糊 vs 具体：真实对比</h3>
+      <table>
+        <tr><th>❌ 模糊提示词</th><th>✅ 具体提示词</th></tr>
+        <tr><td>"帮我做个网站"</td><td>"创建一个单页作品集网站，包含导航栏、英雄区、技能卡片、项目展示和联系方式。深色主题，响应式布局，纯 HTML/CSS/JS。"</td></tr>
+        <tr><td>"修一下这个 bug"</td><td>"用户点击提交按钮后表单没有反应。请检查 js/form.js 中的 submit 事件处理，确认是否正确阻止了默认行为。"</td></tr>
+        <tr><td>"优化性能"</td><td>"首页加载时间 3.2 秒。请检查哪些资源阻塞了渲染，优先优化大于 100KB 的图片和 CSS 文件。"</td></tr>
+        <tr><td>"重构代码"</td><td>"把 src/utils.js 中的 5 个日期处理函数提取到单独的 dates.js 模块，保持原有导出接口不变，更新所有引用。"</td></tr>
+      </table>
+
+      <h3>复杂任务的提示词结构</h3>
+      <ol>
+        <li><strong>目标</strong>：一行目标描述</li>
+        <li><strong>约束</strong>：不可触碰的边界</li>
+        <li><strong>上下文</strong>：相关文件、PR、决策</li>
+        <li><strong>期望输出</strong>：成功的标准</li>
+      </ol>
+
+      <h2 id="context-management">上下文管理</h2>
+      <p>你的 1M token 窗口虽然宽裕但并非无限。巧妙的上下文管理能让会话保持数小时的高效。</p>
+
+      <h3>缓存感知工作流</h3>
+      <ul>
+        <li><strong>批量读取</strong>：一次读取 3+ 文件，而非顺序读取</li>
+        <li><strong>批量工具调用</strong>：grep + read + git_status 在一次轮次中完成</li>
+        <li><strong>追加而非重写</strong>：新发现放在末尾</li>
+        <li><strong>按路径引用</strong>："在 auth.rs:42"而非"这是代码..."</li>
+      </ul>
+
+      <h3>何时使用 /compact</h3>
+      <p>当上下文使用率超过 80% 时建议压缩。将其视为硬重置而非微调。系统会保留工作文件和最近的决策。</p>
+
+      <div class="callout callout-warning">
+        <div class="callout-title">⚠️ 缓存衰减</div>
+        <p>关注缓存命中率指示器。红色（<40%）持续多个轮次 = 需要整合。黄色（<80%）= 注意。绿色 = 健康。</p>
+      </div>
+
+      <h2 id="delegation">委托模式</h2>
+
+      <h3>何时委托给子代理</h3>
+      <p>子代理适用于<strong>独立、可并行的工作</strong>。好的候选场景：</p>
+      <ul>
+        <li>调查 3+ 个独立文件或模块</li>
+        <li>从计划中并行实现独立的叶子任务</li>
+        <li>在主工作同时运行代码审查</li>
+      </ul>
+
+      <h3>反模式</h3>
+      <ul>
+        <li><strong>不要委托单文件读取</strong>：直接读取更快</li>
+        <li><strong>不要预先生成依赖项</strong>：等待步骤 A 的输出后再生成步骤 B</li>
+        <li><strong>不要忘记综合</strong>：子代理输出需要整合</li>
+      </ul>
+
+      <h2 id="modes-guide">模式选择指南</h2>
+      <table>
+        <tr><th>场景</th><th>推荐模式</th><th>理由</th></tr>
+        <tr><td>探索不熟悉的代码库</td><td>Plan</td><td>变更前需要可见性</td></tr>
+        <tr><td>小型、定义明确的 Bug 修复</td><td>YOLO</td><td>低风险，成功标准清晰</td></tr>
+        <tr><td>架构重新设计</td><td>Plan</td><td>影响大；先审查计划</td></tr>
+        <tr><td>为现有代码编写测试</td><td>YOLO</td><td>边界明确，有安全网</td></tr>
+        <tr><td>安全敏感的变更</td><td>Plan</td><td>执行前必须审查</td></tr>
+        <tr><td>重复、可信的工作流</td><td>YOLO</td><td>信任是挣来的，然后使用</td></tr>
+      </table>
+
+      <h2 id="cost-management">成本管理</h2>
+      <p>DeepSeek TUI 虽便宜，但长会话和大量子代理仍会累积费用。以下方法帮助你控制成本：</p>
+
+      <h3>成本优化策略</h3>
+      <ul>
+        <li><strong>使用 Auto 模式</strong>：简单问题自动用 Flash（便宜），复杂问题才用 Pro</li>
+        <li><strong>提升缓存命中率</strong>：追加而非重排消息，保持缓存命中 >80% → 节省约 90% 输入费用</li>
+        <li><strong>合理使用推理深度</strong>：文件读取无需推理（off）；编码用 high；架构设计用 max</li>
+        <li><strong>批量操作</strong>：一次读取 3+ 文件而非逐个读取，减少轮次数</li>
+        <li><strong>注意子代理数量</strong>：每个子代理都是独立 API 调用，控制在必要范围内</li>
+        <li><strong>定期 /compact</strong>：长会话在 80% 上下文时压缩，减少后续 token 消耗</li>
+      </ul>
+
+      <div class="callout callout-success">
+        <div class="callout-title">📊 典型成本参考</div>
+        <p>一个中等复杂度的编码会话（50 轮、含子代理）使用 Flash 模型通常花费 $0.05–$0.20。使用 Pro 模型同等工作量约 $0.50–$2.00。TUI 头部实时显示当前会话总成本。</p>
+      </div>
+
+      <h2 id="pitfalls">常见陷阱</h2>
+
+      <h3>对简单任务过度思考</h3>
+      <p>让思考深度与任务复杂度匹配。文件读取不需要深度推理。将深度思考留给调试和架构设计。</p>
+
+      <h3>串行化独立工作</h3>
+      <p>如果两个操作不相互依赖，将它们批量执行。调度器会同时执行并行工具调用。串行化浪费时间和上下文。</p>
+
+      <h3>留空的侧边栏</h3>
+      <p>侧边栏显示 Plan / Todos / Tasks / Agents。当这些面板为空时，用户不知道你在做什么。使用 <code>checklist_write</code> 和 <code>update_plan</code> 保持填充。</p>
+
+      <h3>盲目遵循原计划</h3>
+      <p>每个阶段后重新审视你的计划。阶段 2 仍然合理吗？如果新信息改变了方法，则更新计划。不要遵循在你理解代码之前制定的计划。</p>
+
+      <h3>不读取就打补丁</h3>
+      <p>在 <code>edit_file</code> 之前始终先 <code>read_file</code>。行号会变化。代码在读取之间可能被修改。你对 10 轮前的文件记忆不可靠。</p>
+
+      <nav class="page-nav">
+        <a href="/zh/features.html" class="page-nav-prev">功能指南</a>
+        <a href="/zh/" class="page-nav-next">首页</a>
+      </nav>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>为 DeepSeek 社区用 ❤️ 构建 · <a href="https://github.com/deepseek-ai">GitHub</a></p>
+    </div>
+  </footer>
+
+  <script src="/js/theme.js"></script>
+  <script src="/js/nav.js"></script>
+</body>
+</html>

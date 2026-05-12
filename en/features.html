@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DeepSeek TUI features: sub-agents, RLM, tasks, skills, checklists, and GitHub integration.">
+  <title>Features Guide — DeepSeek TUI Tutorial</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/layout.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <button id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+          <span class="nav-toggle-icon">☰</span>
+        </button>
+        <a href="/en/" class="header-logo"><span class="logo-icon">🐋</span><span>DeepSeek TUI</span><span class="header-tagline">Terminal AI Agent</span></a>
+      </div>
+      <div class="header-right">
+        <div class="lang-switch">
+          <a href="/en/features.html" class="active" aria-current="page">EN</a>
+          <span class="lang-sep">/</span>
+          <a href="/zh/features.html">中文</a>
+        </div>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+          <span class="theme-icon">🌙</span><span class="theme-label">Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <aside id="sidebar" class="sidebar">
+      <nav class="sidebar-nav" aria-label="Section navigation">
+        <div class="nav-section">
+          <div class="nav-section-title">Features</div>
+          <ul>
+            <li><a href="/en/features.html" class="active">Overview</a></li>
+            <li><a href="#subagents">Sub-Agents</a></li>
+            <li><a href="#rlm">RLM</a></li>
+            <li><a href="#tasks">Task Management</a></li>
+            <li><a href="#skills">Skills System</a></li>
+            <li><a href="#mcp">MCP Servers</a></li>
+            <li><a href="#github">GitHub Integration</a></li>
+            <li><a href="#memory">Memory System</a></li>
+            <li><a href="#cost">Cost &amp; Models</a></li>
+            <li><a href="#checklists">Checklists &amp; Plans</a></li>
+          </ul>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Contents</div>
+          <ul>
+            <li><a href="/en/getting-started.html">Getting Started</a></li>
+            <li><a href="/en/core-concepts.html">Core Concepts</a></li>
+            <li><a href="/en/features.html">Features Guide</a></li>
+            <li><a href="/en/hands-on.html">Hands-On Tutorial</a></li>
+            <li><a href="/en/best-practices.html">Best Practices</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-header">
+        <p class="breadcrumb"><a href="/en/">Home</a> <span class="breadcrumb-sep">/</span> Features Guide</p>
+        <h1>Features Guide</h1>
+        <p>Deep dive into the advanced capabilities that make DeepSeek TUI a powerful development platform.</p>
+      </div>
+
+      <h2 id="subagents">Sub-Agents</h2>
+      <p>Sub-agents are the key to parallel work in DeepSeek TUI. You can spawn multiple sub-agents that run concurrently, each focused on a single task, then synthesize their findings.</p>
+
+      <h3>Why Use Sub-Agents?</h3>
+      <ul>
+        <li><strong>Speed</strong>: Parallel investigation is faster than sequential reading</li>
+        <li><strong>Thoroughness</strong>: Each sub-agent focuses deeply on one thing</li>
+        <li><strong>Cost</strong>: DeepSeek V4 Flash costs $0.14/M input — sub-agents are cheap</li>
+      </ul>
+
+      <h3>Sub-Agent Types</h3>
+      <table>
+        <tr><th>Type</th><th>Role</th><th>When to Use</th></tr>
+        <tr><td>explore</td><td>Investigation</td><td>Understanding unfamiliar code, surveying module trees</td></tr>
+        <tr><td>plan</td><td>Strategy</td><td>Designing architectures, creating implementation plans</td></tr>
+        <tr><td>implementer</td><td>Execution</td><td>Writing code, applying patches, building features</td></tr>
+        <tr><td>review</td><td>Verification</td><td>Code review, security audit, quality gates</td></tr>
+        <tr><td>verifier</td><td>Testing</td><td>Running tests, validating behavior</td></tr>
+      </table>
+
+      <h3>Pattern: Parallel Investigation</h3>
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">Conceptual</span></div>
+        <pre><code># Spawn sub-agents in parallel for independent files
+agent_spawn("Analyze auth module", type="explore")    # Runs concurrently
+agent_spawn("Analyze API routes", type="explore")      # Runs concurrently
+agent_spawn("Analyze database layer", type="explore")  # Runs concurrently
+
+# Wait for all to finish, then synthesize
+agent_wait(wait_mode="all")</code></pre>
+      </div>
+
+      <h3>Concurrency Cap</h3>
+      <p>Default maximum: 10 concurrent sub-agents (configurable via <code>[subagents].max_concurrent</code>). For larger batches, spawn up to the cap, wait, then spawn the next batch.</p>
+
+      <h2 id="rlm">RLM — Recursive Language Model</h2>
+      <p>RLM is for inputs that don't fit in your context window — whole files >50K tokens, long transcripts, multi-document corpora. It loads the input into a Python REPL where you process it with child LLM calls.</p>
+
+      <h3>RLM Patterns</h3>
+      <ul>
+        <li><strong>CHUNK</strong>: Split a large input, process each chunk, synthesize</li>
+        <li><strong>BATCH</strong>: Classify/extract from many independent items in parallel</li>
+        <li><strong>RECURSE</strong>: Decompose + critique for complex analysis</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💡 When to use RLM</div>
+        <p>Use RLM for genuinely large inputs. For exact counts or structured aggregates, compute them directly in Python inside the REPL and report the deterministic result.</p>
+      </div>
+
+      <h2 id="tasks">Task Management</h2>
+      <p>DeepSeek TUI provides a durable task system for long-running, restart-aware work. Tasks persist across sessions and track progress with structured evidence.</p>
+
+      <h3>Task Primitives</h3>
+      <ul>
+        <li><strong>task_create</strong>: Enqueue a durable background task</li>
+        <li><strong>task_list / task_read</strong>: Monitor progress and history</li>
+        <li><strong>task_cancel</strong>: Cancel queued or running tasks</li>
+        <li><strong>task_gate_run</strong>: Run verification gates (fmt, clippy, test)</li>
+      </ul>
+
+      <h3>Task Evidence</h3>
+      <p>Tasks record structured evidence: gate results, PR attempts, verification notes, and file changes. This creates an audit trail for complex multi-step work.</p>
+
+      <h2 id="skills">Skills System</h2>
+      <p>Skills are local instruction sets stored in <code>SKILL.md</code> files. They extend DeepSeek TUI's capabilities with domain-specific knowledge — from Android clean architecture to content marketing.</p>
+
+      <h3>Skill Lifecycle</h3>
+      <ol>
+        <li><strong>Install</strong>: Skills live in <code>~/.deepseek/skills/</code></li>
+        <li><strong>Discover</strong>: Available skills are listed in the session header</li>
+        <li><strong>Load</strong>: Call <code>load_skill("skill-name")</code> to pull the SKILL.md body into context</li>
+      </ol>
+
+      <div class="callout callout-success">
+        <div class="callout-title">🎯 Skill Creator</div>
+        <p>Use the built-in <strong>Skill Creator</strong> skill to create your own domain-specific skills. It guides you through frontmatter, structure, and best practices.</p>
+      </div>
+
+      <h3>Create Your Own Skill</h3>
+      <p>A skill is a directory with a <code>SKILL.md</code> file. Here's a simple example:</p>
+
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">SKILL.md</span></div>
+        <pre><code>---
+name: my-python-style
+description: Use when writing or reviewing Python code.
+---
+
+# Python Style Guide
+
+- Use type hints on all functions
+- Prefer dataclasses over plain classes
+- Use ruff for formatting and linting
+- Max line width 100 characters</code></pre>
+      </div>
+
+      <p>Commands: <code>/skills</code> (list), <code>/skill &lt;name&gt;</code> (activate), <code>/skill new</code> (scaffold), <code>/skill install github:&lt;owner&gt;/&lt;repo&gt;</code> (community install).</p>
+
+      <h2 id="mcp">MCP Servers</h2>
+      <p>DeepSeek TUI supports the <strong>Model Context Protocol (MCP)</strong>, allowing you to connect external tool servers to extend its capabilities.</p>
+
+      <h3>Configuration Example</h3>
+      <p>Configure in <code>~/.deepseek/mcp.json</code>:</p>
+
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">mcp.json</span></div>
+        <pre><code>{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/me"]
+    },
+    "sqlite": {
+      "command": "uvx",
+      "args": ["mcp-server-sqlite", "--db-path", "./data.db"]
+    }
+  }
+}</code></pre>
+      </div>
+
+      <p>Once configured, MCP server tools auto-register as <code>mcp_&lt;server&gt;_&lt;tool&gt;</code>. Use <code>deepseek mcp list</code> to view configured servers and <code>deepseek mcp validate</code> to check connectivity.</p>
+
+      <h2 id="github">GitHub Integration</h2>
+      <p>DeepSeek TUI integrates with GitHub for issue tracking, PR review, and structured acceptance workflows.</p>
+
+      <h3>Available Operations</h3>
+      <ul>
+        <li><strong>github_issue_context</strong>: Read issue body and comments</li>
+        <li><strong>github_pr_context</strong>: Read PR with diffs and review state</li>
+        <li><strong>github_comment</strong>: Post evidence-backed comments</li>
+        <li><strong>github_close_issue</strong>: Close issues with acceptance evidence</li>
+      </ul>
+
+      <p>All write operations require structured acceptance evidence — you can't close an issue without proving the work is done.</p>
+
+      <h2 id="memory">Memory System</h2>
+      <p>DeepSeek TUI supports <strong>cross-session persistent memory</strong>. When enabled, the agent remembers your preferences and key decisions, automatically referencing them in future sessions.</p>
+
+      <h3>How to Enable</h3>
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">Shell</span></div>
+        <pre><code># Enable via environment variable
+$ export DEEPSEEK_MEMORY=on
+
+# Or in config.toml
+# [memory]
+# enabled = true</code></pre>
+      </div>
+      <p>Memory files are stored in <code>~/.deepseek/memories/</code>, organized per project. The agent automatically uses the <code>note</code> tool to record important information during relevant tasks.</p>
+
+      <h2 id="cost">Cost &amp; Models</h2>
+      <p>DeepSeek TUI provides <strong>live cost tracking</strong> — per-turn and session-level token usage and cost estimates with cache hit/miss breakdown.</p>
+
+      <table>
+        <tr><th>Model</th><th>Context</th><th>Input (cache hit)</th><th>Input (cache miss)</th><th>Output</th></tr>
+        <tr><td>deepseek-v4-pro</td><td>1M</td><td>$0.003625/1M*</td><td>$0.435/1M*</td><td>$0.87/1M*</td></tr>
+        <tr><td>deepseek-v4-flash</td><td>1M</td><td>$0.0028/1M</td><td>$0.14/1M</td><td>$0.28/1M</td></tr>
+      </table>
+
+      <p><small>* Pro rates include a limited-time 75% discount (valid until 2026-05-31 15:59 UTC). See <a href="https://api-docs.deepseek.com/quick_start/pricing" target="_blank">official pricing</a> for current rates.</small></p>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💰 Cost Tip</div>
+        <p>The TUI header shows a live cost chip. Use cache-aware workflows (append, don't reorder) to keep cache hit rates above 80%, dramatically reducing costs.</p>
+      </div>
+
+      <h2 id="checklists">Checklists &amp; Plans</h2>
+      <p>DeepSeek TUI's planning system makes complex work visible and trackable. The sidebar shows Plan / Todos / Tasks / Agents so you always know what's happening.</p>
+
+      <h3>Planning Tools</h3>
+      <ul>
+        <li><strong>update_plan</strong>: High-level strategy (3-6 phases)</li>
+        <li><strong>checklist_write</strong>: Granular leaf tasks under the current phase</li>
+        <li><strong>checklist_update</strong>: Mark tasks in_progress or completed</li>
+      </ul>
+
+      <h3>Best Practice</h3>
+      <p>Always create a <code>checklist_write</code> before starting work. Even with auto-approval, visible tracking demonstrates thoroughness and helps the user follow your progress.</p>
+
+      <nav class="page-nav">
+        <a href="/en/core-concepts.html" class="page-nav-prev">Core Concepts</a>
+        <a href="/en/best-practices.html" class="page-nav-next">Best Practices</a>
+      </nav>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>Built with ❤️ for the DeepSeek community · <a href="https://github.com/deepseek-ai">GitHub</a></p>
+    </div>
+  </footer>
+
+  <script src="/js/theme.js"></script>
+  <script src="/js/nav.js"></script>
+</body>
+</html>

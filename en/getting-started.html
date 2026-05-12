@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Install and configure DeepSeek TUI. Your first steps with the terminal AI coding assistant.">
+  <title>Getting Started — DeepSeek TUI Tutorial</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/layout.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <button id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+          <span class="nav-toggle-icon">☰</span>
+        </button>
+        <a href="/en/" class="header-logo">
+          <span class="logo-icon">🐋</span>
+          <span>DeepSeek TUI</span><span class="header-tagline">Terminal AI Agent</span>
+        </a>
+      </div>
+      <div class="header-right">
+        <div class="lang-switch">
+          <a href="/en/getting-started.html" class="active" aria-current="page">EN</a>
+          <span class="lang-sep">/</span>
+          <a href="/zh/getting-started.html">中文</a>
+        </div>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+          <span class="theme-icon">🌙</span>
+          <span class="theme-label">Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <aside id="sidebar" class="sidebar">
+      <nav class="sidebar-nav" aria-label="Section navigation">
+        <div class="nav-section">
+          <div class="nav-section-title">Getting Started</div>
+          <ul>
+            <li><a href="/en/getting-started.html" class="active">Overview</a></li>
+            <li><a href="#installation">Installation</a></li>
+            <li><a href="#configuration">Configuration</a></li>
+            <li><a href="#first-session">First Session</a></li>
+            <li><a href="#api-key">API Key Setup</a></li>
+            <li><a href="#workspace">Workspace Model</a></li>
+            <li><a href="#commands">Command Reference</a></li>
+            <li><a href="#troubleshooting">Troubleshooting</a></li>
+          </ul>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Contents</div>
+          <ul>
+            <li><a href="/en/getting-started.html">Getting Started</a></li>
+            <li><a href="/en/core-concepts.html">Core Concepts</a></li>
+            <li><a href="/en/features.html">Features Guide</a></li>
+            <li><a href="/en/hands-on.html">Hands-On Tutorial</a></li>
+            <li><a href="/en/best-practices.html">Best Practices</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-header">
+        <p class="breadcrumb">
+          <a href="/en/">Home</a> <span class="breadcrumb-sep">/</span> Getting Started
+        </p>
+        <h1>Getting Started</h1>
+        <p>Install, configure, and launch your first DeepSeek TUI session in minutes.</p>
+      </div>
+
+      <!-- Overview -->
+      <h2>What is DeepSeek TUI?</h2>
+      <p>
+        DeepSeek TUI is a terminal-based AI coding assistant powered by DeepSeek V4 models.
+        It runs directly in your terminal, giving you an agentic pair programmer that can:
+      </p>
+      <ul>
+        <li><strong>Read and write files</strong> in your project workspace</li>
+        <li><strong>Execute shell commands</strong> for testing, building, and diagnostics</li>
+        <li><strong>Search and navigate</strong> your codebase with structured tools</li>
+        <li><strong>Decompose complex tasks</strong> into plans, checklists, and sub-agent workflows</li>
+        <li><strong>Operate autonomously</strong> in YOLO mode or collaboratively in Plan mode</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <div class="callout-title">🖥️ TUI = Terminal User Interface</div>
+        <p>Unlike web-based AI tools, DeepSeek TUI runs entirely in your terminal. This means it has direct filesystem access, shell integration, and fits naturally into your existing Unix workflow.</p>
+      </div>
+
+      <!-- Installation -->
+      <h2 id="installation">Installation</h2>
+
+      <h3>Linux &amp; macOS</h3>
+
+      <h4>Via Cargo</h4>
+      <div class="code-example">
+        <div class="code-example-header">
+          <span class="code-label">Shell</span>
+          <button class="copy-btn" onclick="navigator.clipboard.writeText('cargo install deepseek-tui-cli --locked')">Copy</button>
+        </div>
+        <pre><code>$ cargo install deepseek-tui-cli --locked
+$ deepseek</code></pre>
+      </div>
+
+      <h4>Via npm</h4>
+      <div class="code-example">
+        <div class="code-example-header">
+          <span class="code-label">Shell</span>
+          <button class="copy-btn" onclick="navigator.clipboard.writeText('npm i -g deepseek-tui')">Copy</button>
+        </div>
+        <pre><code>$ npm i -g deepseek-tui
+# First run sets up ~/.deepseek/</code></pre>
+      </div>
+
+      <p>Requires Rust 1.88+ or Node >=18.</p>
+
+      <h4>Via Homebrew (macOS)</h4>
+      <div class="code-example">
+        <div class="code-example-header">
+          <span class="code-label">Shell</span>
+          <button class="copy-btn" onclick="navigator.clipboard.writeText('brew tap Hmbown/deepseek-tui && brew install deepseek-tui')">Copy</button>
+        </div>
+        <pre><code>$ brew tap Hmbown/deepseek-tui
+$ brew install deepseek-tui</code></pre>
+      </div>
+
+      <h4>Direct Download (no package manager)</h4>
+      <p>Download prebuilt binaries from <a href="https://github.com/Hmbown/DeepSeek-TUI/releases" target="_blank">GitHub Releases</a>. Available for Linux x64/ARM64, macOS x64/ARM64, Windows x64.</p>
+
+      <h4>Via Docker</h4>
+      <div class="code-example">
+        <div class="code-example-header">
+          <span class="code-label">Shell</span>
+          <button class="copy-btn" onclick="navigator.clipboard.writeText('docker run --rm -it -e DEEPSEEK_API_KEY -v "$PWD:/workspace" ghcr.io/hmbown/deepseek-tui:latest')">Copy</button>
+        </div>
+        <pre><code>$ docker run --rm -it \
+    -e DEEPSEEK_API_KEY \
+    -v "$PWD:/workspace" \
+    ghcr.io/hmbown/deepseek-tui:latest</code></pre>
+      </div>
+
+      <h3>Windows</h3>
+      <h4>WSL2 (Recommended)</h4>
+      <p>DeepSeek TUI runs natively under WSL2. Follow the Linux installation steps inside your WSL terminal.</p>
+
+      <h4>Scoop Package Manager</h4>
+      <div class="code-example">
+        <div class="code-example-header">
+          <span class="code-label">PowerShell</span>
+          <button class="copy-btn" onclick="navigator.clipboard.writeText('scoop update && scoop install deepseek-tui')">Copy</button>
+        </div>
+        <pre><code>$ scoop update
+$ scoop install deepseek-tui
+$ deepseek --version</code></pre>
+      </div>
+
+      <div class="callout callout-info">
+        <div class="callout-title">🇨🇳 Users in China</div>
+        <p>Speed up npm with <code>--registry=https://registry.npmmirror.com</code>. Cargo users can configure a <a href="https://mirrors.tuna.tsinghua.edu.cn/help/crates.io-index.git/" target="_blank">Tsinghua mirror</a>.</p>
+      </div>
+
+      <h3>Verify Installation</h3>
+      <div class="code-example">
+        <div class="code-example-header">
+          <span class="code-label">Shell</span>
+          <button class="copy-btn" onclick="navigator.clipboard.writeText('deepseek --version')">Copy</button>
+        </div>
+        <pre><code>$ deepseek --version
+deepseek-tui 0.8.31</code></pre>
+      </div>
+
+      <!-- API Key Setup -->
+      <h2 id="api-key">API Key Setup</h2>
+      <p>On first launch you'll be prompted for your DeepSeek API key (<a href="https://platform.deepseek.com/api_keys" target="_blank">get one here</a>). You can also set it ahead of time:</p>
+
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">Shell</span></div>
+        <pre><code># Save to config file (recommended, works from any directory)
+$ deepseek auth set --provider deepseek
+
+# Check current auth status
+$ deepseek auth status
+
+# Or use an environment variable (for non-interactive shells)
+$ export DEEPSEEK_API_KEY="sk-your-key-here"
+
+# Verify everything works
+$ deepseek doctor</code></pre>
+      </div>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💡 Auth Priority</div>
+        <p>Saved config keys take precedence over environment variables and the system keyring, and are easier to rotate. Use <code>deepseek auth clear --provider deepseek</code> to remove a saved key. If <code>deepseek doctor</code> reports a rejected key, check for stale environment variable exports.</p>
+      </div>
+
+      <!-- Configuration -->
+      <h2 id="configuration">Configuration</h2>
+      <p>DeepSeek TUI stores its configuration in two key locations:</p>
+
+      <div class="code-example">
+        <div class="code-example-header">
+          <span class="code-label">Config files</span>
+        </div>
+        <pre><code>~/.deepseek/           # Main config directory
+├── config.toml        # Core configuration
+├── instructions.md    # Custom project instructions (auto-generated)
+├── skills/            # Installed skills
+├── memories/          # Persistent memory store
+└── plugins/           # Plugin system</code></pre>
+      </div>
+
+      <h3>Essential Settings</h3>
+      <p>Edit <code>~/.deepseek/config.toml</code>:</p>
+
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">config.toml</span></div>
+        <pre><code>[api]
+key = "sk-..."
+base_url = "https://api.deepseek.com"
+model = "deepseek-v4-pro"  # default; deepseek-v4-flash is the fast / sub-agent option
+
+[ui]
+default_mode = "agent"     # plan | agent | yolo
+approval_mode = "suggest"  # suggest | auto | never
+reasoning_effort = "high"  # off | high | max</code></pre>
+      </div>
+
+      <h3>Project Instructions</h3>
+      <p>
+        The <code>instructions.md</code> file in your project root is auto-generated and tells DeepSeek TUI about
+        your project structure, language preferences, and workspace boundaries. You can edit it to add
+        project-specific guidance.
+      </p>
+
+      <!-- First Session -->
+      <h2 id="first-session">Your First Session</h2>
+
+      <ol class="step-list">
+        <li>
+          <strong>Navigate to your project</strong>
+          <div class="code-example">
+            <div class="code-example-header"><span class="code-label">Shell</span></div>
+            <pre><code>$ cd ~/my-project</code></pre>
+          </div>
+        </li>
+        <li>
+          <strong>Launch DeepSeek TUI</strong>
+          <div class="code-example">
+            <div class="code-example-header"><span class="code-label">Shell</span></div>
+            <pre><code>$ deepseek</code></pre>
+          </div>
+        </li>
+        <li>
+          <strong>Write your first prompt</strong>
+          <p>The interface opens in your terminal. Try a simple task to get comfortable:</p>
+          <div class="code-example">
+            <div class="code-example-header"><span class="code-label">DeepSeek TUI</span></div>
+            <pre><code>Summarize the project structure and key files.</code></pre>
+          </div>
+        </li>
+      </ol>
+
+      <div class="callout callout-success">
+        <div class="callout-title">✅ Successful First Session</div>
+        <p>The agent will read your project files, respond with analysis, and wait for your next instruction. You're now pair-programming with AI.</p>
+      </div>
+
+      <h3>More Ways to Launch</h3>
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">Shell</span></div>
+        <pre><code># Interactive TUI (default)
+$ deepseek
+
+# One-shot prompt (non-interactive)
+$ deepseek "Explain what this function does"
+
+# Specify a model
+$ deepseek --model deepseek-v4-flash "Summarize the README"
+
+# Auto-select model and thinking level (recommended for beginners)
+$ deepseek --model auto "Fix this bug"
+
+# Full auto mode (auto-approves all actions — use carefully)
+$ deepseek --yolo
+
+# List available models
+$ deepseek models
+
+# List saved sessions
+$ deepseek sessions
+
+# Resume the last session
+$ deepseek resume --last</code></pre>
+      </div>
+
+      <!-- Workspace Model -->
+      <h2 id="workspace">Workspace Model</h2>
+      <p>
+        DeepSeek TUI operates within a <strong>workspace</strong> — the directory where you launched it.
+        All file operations are relative to this root. This is a security boundary:
+        tools cannot read or write files outside the workspace without explicit trust mode.
+      </p>
+
+      <h3>Key Concepts</h3>
+      <ul>
+        <li><strong>Working directory</strong>: The directory passed to <code>deepseek</code> or set via <code>cd</code></li>
+        <li><strong>Workspace root</strong>: The top-level project directory</li>
+        <li><strong>Active paths</strong>: Files the agent is currently focused on</li>
+        <li><strong>Trust mode</strong>: Grants access outside the workspace when needed</li>
+      </ul>
+
+      <div class="callout callout-warning">
+        <div class="callout-title">⚠️ Security Note</div>
+        <p>By default, DeepSeek TUI constrains file access to the workspace. Enable trust mode only when you need cross-project operations and review tool calls carefully.</p>
+      </div>
+
+      <h3>Sandbox Protection</h3>
+      <p>DeepSeek TUI uses OS-level sandboxing to constrain tool execution:</p>
+      <ul>
+        <li><strong>Linux</strong>: landlock</li>
+        <li><strong>macOS</strong>: seatbelt</li>
+        <li><strong>Windows</strong>: AppContainer / restricted tokens</li>
+      </ul>
+
+      <!-- Command Reference -->
+      <h2 id="commands">Command Reference</h2>
+
+      <table>
+        <tr><th>Command</th><th>Purpose</th></tr>
+        <tr><td><code>deepseek</code></td><td>Launch interactive TUI</td></tr>
+        <tr><td><code>deepseek "prompt"</code></td><td>One-shot prompt (non-interactive)</td></tr>
+        <tr><td><code>deepseek --model auto</code></td><td>Auto-select model and thinking level</td></tr>
+        <tr><td><code>deepseek --yolo</code></td><td>Full auto mode (auto-approve)</td></tr>
+        <tr><td><code>deepseek auth set</code></td><td>Save API key</td></tr>
+        <tr><td><code>deepseek doctor</code></td><td>Check setup and connectivity</td></tr>
+        <tr><td><code>deepseek models</code></td><td>List available models</td></tr>
+        <tr><td><code>deepseek sessions</code></td><td>List saved sessions</td></tr>
+        <tr><td><code>deepseek resume --last</code></td><td>Resume the most recent session</td></tr>
+        <tr><td><code>deepseek update</code></td><td>Check for and apply updates</td></tr>
+        <tr><td><code>deepseek serve --http</code></td><td>Start HTTP/SSE API server</td></tr>
+        <tr><td><code>deepseek mcp list</code></td><td>List MCP servers</td></tr>
+      </table>
+
+      <!-- Troubleshooting -->
+      <h2 id="troubleshooting">Troubleshooting</h2>
+
+      <h3>API Key Rejected</h3>
+      <p><strong>Symptom</strong>: <code>deepseek doctor</code> reports an invalid or rejected key.</p>
+      <ul>
+        <li>Run <code>deepseek auth status</code> to see the active credential source</li>
+        <li>Check for a stale <code>DEEPSEEK_API_KEY</code> environment variable overriding your config</li>
+        <li>Run <code>deepseek auth set --provider deepseek</code> to re-save</li>
+        <li>Confirm your key is from the <a href="https://platform.deepseek.com/api_keys" target="_blank">DeepSeek Platform</a> and hasn't expired</li>
+      </ul>
+
+      <h3>Command Not Found</h3>
+      <p><strong>Symptom</strong>: Terminal says <code>deepseek: command not found</code>.</p>
+      <ul>
+        <li>Cargo install: ensure <code>~/.cargo/bin</code> is in your <code>$PATH</code></li>
+        <li>npm install: ensure the npm global bin directory is in <code>$PATH</code> (check with <code>npm bin -g</code>)</li>
+        <li>Re-open your terminal or run <code>source ~/.bashrc</code></li>
+      </ul>
+
+      <h3>Agent Output Not Matching Expectations</h3>
+      <p><strong>Symptom</strong>: The agent generates code that doesn't match your requirements.</p>
+      <ul>
+        <li><strong>Prompt too vague</strong>: See <a href="/en/best-practices.html#prompting">Prompt Engineering</a> for improvement tips</li>
+        <li><strong>Context too long</strong>: Run <code>/compact</code> then retry</li>
+        <li><strong>Wrong mode</strong>: Plan mode is read-only — confirm you're in Agent or YOLO mode</li>
+      </ul>
+
+      <h3>How to Undo Mistakes</h3>
+      <ul>
+        <li><strong>Undo the last turn</strong>: Type <code>/restore</code> in the conversation to roll back files</li>
+        <li><strong>Undo a specific turn</strong>: Use the <code>revert_turn</code> tool</li>
+        <li><strong>Git safety</strong>: Operations never touch your <code>.git</code> directory — use <code>git diff</code> anytime to review changes</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <div class="callout-title">🩺 Diagnostic Command</div>
+        <p>When in doubt, run <code>deepseek doctor</code> — it checks config, connectivity, and common misconfigurations, and suggests fixes.</p>
+      </div>
+
+      <!-- Page Navigation -->
+      <nav class="page-nav">
+        <a href="/en/" class="page-nav-prev">Home</a>
+        <a href="/en/core-concepts.html" class="page-nav-next">Core Concepts</a>
+      </nav>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>Built with ❤️ for the DeepSeek community · <a href="https://github.com/deepseek-ai">GitHub</a></p>
+    </div>
+  </footer>
+
+  <script src="/js/theme.js"></script>
+  <script src="/js/nav.js"></script>
+</body>
+</html>

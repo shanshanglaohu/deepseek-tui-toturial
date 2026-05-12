@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DeepSeek TUI 核心概念：Agent 模式、思考预算、分解哲学和上下文窗口管理。">
+  <title>核心概念 — DeepSeek TUI 教程</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/layout.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <button id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="切换导航" aria-expanded="false">
+          <span class="nav-toggle-icon">☰</span>
+        </button>
+        <a href="/zh/" class="header-logo">
+          <span class="logo-icon">🐋</span><span>DeepSeek TUI</span><span class="header-tagline">终端 AI 代理</span>
+        </a>
+      </div>
+      <div class="header-right">
+        <div class="lang-switch">
+          <a href="/en/core-concepts.html">EN</a>
+          <span class="lang-sep">/</span>
+          <a href="/zh/core-concepts.html" class="active" aria-current="page">中文</a>
+        </div>
+        <button id="theme-toggle" class="theme-toggle" aria-label="切换深色模式">
+          <span class="theme-icon">🌙</span><span class="theme-label">深色</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <aside id="sidebar" class="sidebar">
+      <nav class="sidebar-nav" aria-label="章节导航">
+        <div class="nav-section">
+          <div class="nav-section-title">核心概念</div>
+          <ul>
+            <li><a href="/zh/core-concepts.html" class="active">概述</a></li>
+            <li><a href="#modes">Agent 模式</a></li>
+            <li><a href="#auto-mode">Auto 模式</a></li>
+            <li><a href="#thinking">思考预算</a></li>
+            <li><a href="#decomposition">分解哲学</a></li>
+            <li><a href="#context">上下文与缓存</a></li>
+            <li><a href="#sessions">会话管理</a></li>
+            <li><a href="#tools">工具系统</a></li>
+            <li><a href="#shortcuts">键盘快捷键</a></li>
+          </ul>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">目录</div>
+          <ul>
+            <li><a href="/zh/getting-started.html">快速入门</a></li>
+            <li><a href="/zh/core-concepts.html">核心概念</a></li>
+            <li><a href="/zh/features.html">功能指南</a></li>
+            <li><a href="/zh/hands-on.html">实战教程</a></li>
+            <li><a href="/zh/best-practices.html">最佳实践</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-header">
+        <p class="breadcrumb"><a href="/zh/">首页</a> <span class="breadcrumb-sep">/</span> 核心概念</p>
+        <h1>核心概念</h1>
+        <p>理解让 DeepSeek TUI 成为高效 AI 协作伙伴的基础理念。</p>
+      </div>
+
+      <h2 id="modes">Agent 模式</h2>
+      <p>DeepSeek TUI 在不同的模式下运行，控制其自主程度。为任务选择合适的模式是你最重要的决策之一。</p>
+
+      <h3>Plan 模式（计划模式）</h3>
+      <p>Plan 模式为<strong>只读调查</strong>。Agent 可以 grep、读取文件、列出目录、获取 URL——但<strong>不能写入文件或执行 Shell 命令</strong>。适合安全探索。</p>
+      <ul>
+        <li><strong>适用场景</strong>：代码库探索、查阅文档、不熟悉的项目</li>
+        <li><strong>行为特征</strong>：纯只读，零副作用，不会修改任何文件</li>
+        <li><strong>安全性</strong>：最高——无写入或执行能力</li>
+      </ul>
+
+      <h3>Agent 模式（默认）</h3>
+      <p>默认的多步骤工具使用模式。Shell 和有副作用的工具根据 <code>approval_mode</code> 设置需要审批。</p>
+      <ul>
+        <li><strong>适用场景</strong>：日常开发、代码修改、测试运行</li>
+        <li><strong>行为特征</strong>：创建计划和清单，关键操作请求审批</li>
+        <li><strong>安全性</strong>：中等——依据审批策略控制</li>
+      </ul>
+
+      <h3>YOLO 模式（全自动模式）</h3>
+      <p>YOLO 模式赋予 Agent <strong>完全自主权</strong>——自动批准所有操作并启用信任模式，工作空间边界解除。请谨慎使用。</p>
+      <ul>
+        <li><strong>适用场景</strong>：明确定义的任务、可信工作流、快速迭代</li>
+        <li><strong>行为特征</strong>：快速行动、立即执行，仍会创建清单以便追踪</li>
+        <li><strong>安全性</strong>：较低——信任 Agent 或事后审查变更</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <div class="callout-title">🔄 模式切换</div>
+        <p>按 <kbd>Tab</kbd> 循环切换模式（Plan → Agent → YOLO），<kbd>Shift+Tab</kbd> 切换推理深度。探索不熟悉的代码时从 Plan 模式开始，日常开发使用 Agent 模式，任务明确时使用 YOLO 模式。</p>
+      </div>
+
+      <h2 id="auto-mode">Auto 模式（智能路由）</h2>
+      <p>使用 <code>--model auto</code> 时，DeepSeek TUI 会<strong>自动为每一轮选择最合适的模型和推理深度</strong>，无需手动切换。</p>
+
+      <h3>Auto 模式如何工作</h3>
+      <ol>
+        <li>在发送真实请求前，先用 <code>deepseek-v4-flash</code>（无推理）做一个轻量路由调用</li>
+        <li>路由器根据你的请求内容和上下文，选择具体的模型和推理级别</li>
+        <li>简单问题 → Flash + 无推理；编码/调试/架构 → Pro + 高推理</li>
+      </ol>
+
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">Shell</span></div>
+        <pre><code># 启动时开启 Auto 模式
+$ deepseek --model auto
+
+# 或在会话中使用命令切换
+/model auto</code></pre>
+      </div>
+
+      <div class="callout callout-success">
+        <div class="callout-title">🎯 推荐新手使用 Auto 模式</div>
+        <p>不确定选哪个模型？直接用 <code>--model auto</code>。系统会自动决策，兼顾成本和效果。TUI 头部会显示实际使用的模型。</p>
+      </div>
+
+      <h2 id="thinking">思考预算</h2>
+      <p>DeepSeek V4 模型会生成<strong>思考 token</strong>——用于提升输出质量的内部推理，但会消耗上下文空间。DeepSeek TUI 允许你控制这个权衡。</p>
+
+      <h3>预算等级</h3>
+      <table>
+        <tr><th>任务类型</th><th>深度</th><th>示例</th></tr>
+        <tr><td>简单查询</td><td>跳过</td><td>读取文件、搜索模式</td></tr>
+        <tr><td>工具输出解读</td><td>轻度</td><td>验证 grep 结果</td></tr>
+        <tr><td>代码生成</td><td>中等</td><td>编写单个函数</td></tr>
+        <tr><td>多文件重构</td><td>中等</td><td>跨文件依赖变更</td></tr>
+        <tr><td>调试排错</td><td>深度</td><td>根因分析</td></tr>
+        <tr><td>架构设计</td><td>深度</td><td>权衡分析、约束建模</td></tr>
+        <tr><td>安全审查</td><td>深度</td><td>对抗性推理</td></tr>
+      </table>
+
+      <blockquote>
+        <p>思考一次，多次引用。将结论缓存为简洁的内联摘要，而不是每轮重新推导。这样可以在长会话中保持思考效率。</p>
+      </blockquote>
+
+      <h2 id="decomposition">分解哲学</h2>
+      <p>DeepSeek TUI 是一个<strong>"受控天才"</strong>——它在单项任务上表现出色，但真正的超能力是分解复杂工作。三种模式支配着这个过程：</p>
+
+      <h3>PREVIEW — 行动前先勘测</h3>
+      <p>在处理大型任务之前，先扫描目录结构、文件头部和模块树。30 秒的预览可以避免数小时的错误方向探索。</p>
+
+      <h3>CHUNK + Map-Reduce（分块+归并）</h3>
+      <p>拆分为独立子任务，并行处理每个子任务（通过子代理或并行工具调用），然后将发现综合成连贯的整体。</p>
+
+      <h3>RECURSIVE 递归分解</h3>
+      <p>当子任务揭示子问题时：递归分解直到每个叶子任务可处理。维护任务树并将发现向上传播。</p>
+
+      <h2 id="context">上下文窗口与缓存</h2>
+      <p>DeepSeek TUI 拥有<strong>1M token 的上下文窗口</strong>和智能前缀缓存系统。理解其工作原理有助于从长会话中获得最大价值。</p>
+
+      <h3>前缀缓存经济学</h3>
+      <ul>
+        <li>V4 以 128 token 粒度缓存共享前缀</li>
+        <li>缓存命中获得约 90% 的成本折扣</li>
+        <li>追加到现有消息可保留缓存</li>
+        <li>删除或修改旧消息会破坏缓存</li>
+      </ul>
+
+      <h3>缓存管理</h3>
+      <ul>
+        <li><strong>追加，不要重排</strong>——新内容放在末尾</li>
+        <li><strong>不要改写引用内容</strong>——按路径或行范围引用</li>
+        <li><strong>将 /compact 用作硬重置</strong>，而非微调</li>
+        <li><strong>读取一次，反复引用</strong>——重新读取会破坏缓存</li>
+      </ul>
+
+      <h2 id="sessions">会话管理</h2>
+      <p>DeepSeek TUI 支持<strong>保存、恢复和分叉</strong>会话。即使终端关闭、电脑重启，也能从上次中断处继续。</p>
+
+      <h3>关键操作</h3>
+      <ul>
+        <li><strong>自动保存</strong>：每次对话自动保存，无需手动操作</li>
+        <li><strong>恢复会话</strong>：<code>deepseek resume --last</code> 恢复最近一次会话</li>
+        <li><strong>分叉会话</strong>：<code>deepseek fork &lt;SESSION_ID&gt;</code> 在某个轮次创建分支</li>
+        <li><strong>列出会话</strong>：<code>deepseek sessions</code> 查看所有已保存的会话</li>
+        <li><strong>回滚</strong>：<code>/restore</code> 或 <code>revert_turn</code> 回退到之前的状态（不影响你的 git 仓库）</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💾 工作空间隔离</div>
+        <p>会话按工作空间范围保存和列出。项目 A 的会话历史不会泄露到项目 B 中。每个项目维护独立的会话列表。</p>
+      </div>
+
+      <h2 id="tools">工具系统</h2>
+      <p>DeepSeek TUI 提供了一套结构化的工具箱来与你的项目交互。所有工具在安全工作空间边界内运行。</p>
+
+      <h3>工具分类</h3>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">📁</div>
+          <div class="card-title">文件 I/O</div>
+          <div class="card-desc">read_file, write_file, edit_file, apply_patch — 安全、受工作空间约束的文件操作。</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">💻</div>
+          <div class="card-title">Shell</div>
+          <div class="card-desc">exec_shell, task_shell_start — 运行命令、测试、构建和长时间进程。</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔍</div>
+          <div class="card-title">搜索</div>
+          <div class="card-desc">grep_files, file_search, web_search — 查找代码模式、文件和网络资源。</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📋</div>
+          <div class="card-title">规划</div>
+          <div class="card-desc">update_plan, checklist_write — 结构化任务跟踪，进度可见。</div>
+        </div>
+      </div>
+
+      <h3>并行优先策略</h3>
+      <p>在调用任何工具之前，先检查你的清单：是否有另一个可以并发运行的工具？调度器会同时执行并行工具调用——串行化独立操作浪费时间和上下文空间。</p>
+
+      <h2 id="shortcuts">键盘快捷键</h2>
+      <p>掌握以下快捷键可以大幅提升操作效率：</p>
+
+      <table>
+        <tr><th>按键</th><th>功能</th></tr>
+        <tr><td><kbd>Tab</kbd></td><td>补全命令/提及；运行中则排队后续提问；否则切换模式</td></tr>
+        <tr><td><kbd>Shift+Tab</kbd></td><td>循环推理深度：off → high → max</td></tr>
+        <tr><td><kbd>F1</kbd></td><td>可搜索的帮助覆盖层</td></tr>
+        <tr><td><kbd>Esc</kbd></td><td>返回 / 取消</td></tr>
+        <tr><td><kbd>Ctrl+K</kbd></td><td>命令面板</td></tr>
+        <tr><td><kbd>Ctrl+R</kbd></td><td>恢复之前的会话</td></tr>
+        <tr><td><kbd>Alt+R</kbd></td><td>搜索提示词历史并恢复已清除的草稿</td></tr>
+        <tr><td><kbd>Ctrl+S</kbd></td><td>暂存当前草稿（<code>/stash list</code> 查看，<code>/stash pop</code> 恢复）</td></tr>
+        <tr><td><kbd>@path</kbd></td><td>在输入框中附加文件/目录上下文</td></tr>
+      </table>
+
+      <nav class="page-nav">
+        <a href="/zh/getting-started.html" class="page-nav-prev">快速入门</a>
+        <a href="/zh/features.html" class="page-nav-next">功能指南</a>
+      </nav>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>为 DeepSeek 社区用 ❤️ 构建 · <a href="https://github.com/deepseek-ai">GitHub</a></p>
+    </div>
+  </footer>
+
+  <script src="/js/theme.js"></script>
+  <script src="/js/nav.js"></script>
+</body>
+</html>

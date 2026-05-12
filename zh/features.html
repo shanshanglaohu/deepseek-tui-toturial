@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DeepSeek TUI 功能指南：子代理、RLM、任务管理、技能系统和 GitHub 集成。">
+  <title>功能指南 — DeepSeek TUI 教程</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/layout.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <button id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="切换导航" aria-expanded="false">
+          <span class="nav-toggle-icon">☰</span>
+        </button>
+        <a href="/zh/" class="header-logo"><span class="logo-icon">🐋</span><span>DeepSeek TUI</span><span class="header-tagline">终端 AI 代理</span></a>
+      </div>
+      <div class="header-right">
+        <div class="lang-switch">
+          <a href="/en/features.html">EN</a>
+          <span class="lang-sep">/</span>
+          <a href="/zh/features.html" class="active" aria-current="page">中文</a>
+        </div>
+        <button id="theme-toggle" class="theme-toggle" aria-label="切换深色模式">
+          <span class="theme-icon">🌙</span><span class="theme-label">深色</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <aside id="sidebar" class="sidebar">
+      <nav class="sidebar-nav" aria-label="章节导航">
+        <div class="nav-section">
+          <div class="nav-section-title">功能指南</div>
+          <ul>
+            <li><a href="/zh/features.html" class="active">概述</a></li>
+            <li><a href="#subagents">子代理</a></li>
+            <li><a href="#rlm">RLM 递归语言模型</a></li>
+            <li><a href="#tasks">任务管理</a></li>
+            <li><a href="#skills">技能系统</a></li>
+            <li><a href="#mcp">MCP 服务器</a></li>
+            <li><a href="#github">GitHub 集成</a></li>
+            <li><a href="#memory">记忆系统</a></li>
+            <li><a href="#cost">成本与模型</a></li>
+            <li><a href="#checklists">清单与计划</a></li>
+          </ul>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">目录</div>
+          <ul>
+            <li><a href="/zh/getting-started.html">快速入门</a></li>
+            <li><a href="/zh/core-concepts.html">核心概念</a></li>
+            <li><a href="/zh/features.html">功能指南</a></li>
+            <li><a href="/zh/hands-on.html">实战教程</a></li>
+            <li><a href="/zh/best-practices.html">最佳实践</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-header">
+        <p class="breadcrumb"><a href="/zh/">首页</a> <span class="breadcrumb-sep">/</span> 功能指南</p>
+        <h1>功能指南</h1>
+        <p>深入探索使 DeepSeek TUI 成为强大开发平台的高级功能。</p>
+      </div>
+
+      <h2 id="subagents">子代理（Sub-Agents）</h2>
+      <p>子代理是 DeepSeek TUI 并行工作的核心。你可以生成多个并发运行的子代理，每个专注于单一任务，然后综合它们的结果。</p>
+
+      <h3>为什么使用子代理？</h3>
+      <ul>
+        <li><strong>速度</strong>：并行调查比顺序阅读更快</li>
+        <li><strong>深度</strong>：每个子代理深入专注于一件事</li>
+        <li><strong>成本</strong>：DeepSeek V4 Flash 每百万输入仅 $0.14——子代理很便宜</li>
+      </ul>
+
+      <h3>子代理类型</h3>
+      <table>
+        <tr><th>类型</th><th>角色</th><th>使用场景</th></tr>
+        <tr><td>explore</td><td>探索调查</td><td>理解不熟悉的代码、扫描模块树</td></tr>
+        <tr><td>plan</td><td>策略规划</td><td>设计架构、制定实施计划</td></tr>
+        <tr><td>implementer</td><td>代码实现</td><td>编写代码、应用补丁、构建功能</td></tr>
+        <tr><td>review</td><td>代码审查</td><td>代码 Review、安全审计、质量门禁</td></tr>
+        <tr><td>verifier</td><td>验证测试</td><td>运行测试、验证行为</td></tr>
+      </table>
+
+      <h3>模式：并行调查</h3>
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">概念示意</span></div>
+        <pre><code># 并行生成子代理来调查独立文件
+agent_spawn("分析 auth 模块", type="explore")     # 并发运行
+agent_spawn("分析 API 路由", type="explore")      # 并发运行
+agent_spawn("分析数据库层", type="explore")        # 并发运行
+
+# 等待全部完成后综合结果
+agent_wait(wait_mode="all")</code></pre>
+      </div>
+
+      <h3>并发上限</h3>
+      <p>默认最大并发数：10 个子代理（可通过 <code>[subagents].max_concurrent</code> 配置）。对于更大批量的任务，先达到上限，等待完成后生成下一批。</p>
+
+      <h2 id="rlm">RLM — 递归语言模型</h2>
+      <p>RLM 用于处理超出上下文窗口的输入——完整文件 >50K tokens、长对话记录、多文档语料库。它将输入加载到 Python REPL 中，你可以通过子 LLM 调用来处理。</p>
+
+      <h3>RLM 三种模式</h3>
+      <ul>
+        <li><strong>CHUNK 分块</strong>：将大输入拆分，分别处理，综合结果</li>
+        <li><strong>BATCH 批量</strong>：并行分类/提取多个独立项目</li>
+        <li><strong>RECURSE 递归</strong>：分解 + 批评，用于复杂分析</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💡 何时使用 RLM</div>
+        <p>在输入确实很大时使用 RLM。对于精确计数或结构化聚合，直接在 REPL 中用 Python 计算，报告确定性结果。</p>
+      </div>
+
+      <h2 id="tasks">任务管理</h2>
+      <p>DeepSeek TUI 提供了持久化任务系统，用于长时间运行、可重启的工作。任务跨会话持久化，并通过结构化证据跟踪进度。</p>
+
+      <h3>任务原语</h3>
+      <ul>
+        <li><strong>task_create</strong>：将持久化后台任务加入队列</li>
+        <li><strong>task_list / task_read</strong>：监控进度和历史</li>
+        <li><strong>task_cancel</strong>：取消排队中或运行中的任务</li>
+        <li><strong>task_gate_run</strong>：运行验证门禁（fmt、clippy、test）</li>
+      </ul>
+
+      <h3>任务证据</h3>
+      <p>任务记录结构化证据：门禁结果、PR 尝试、验证备注和文件变更。这为复杂的多步骤工作创建了审计追踪。</p>
+
+      <h2 id="skills">技能系统</h2>
+      <p>技能是存储在 <code>SKILL.md</code> 文件中的本地指令集。它们用特定领域知识扩展 DeepSeek TUI 的能力——从 Android Clean Architecture 到内容营销。</p>
+
+      <h3>技能生命周期</h3>
+      <ol>
+        <li><strong>安装</strong>：技能存放在 <code>~/.deepseek/skills/</code></li>
+        <li><strong>发现</strong>：可用技能在会话头部列出</li>
+        <li><strong>加载</strong>：调用 <code>load_skill("skill-name")</code> 将 SKILL.md 内容加载到上下文</li>
+      </ol>
+
+      <div class="callout callout-success">
+        <div class="callout-title">🎯 技能创建器</div>
+        <p>使用内置的 <strong>Skill Creator</strong> 技能来创建你自己的领域特定技能。它会引导你完成 frontmatter、结构和最佳实践。</p>
+      </div>
+
+      <h3>创建自己的技能</h3>
+      <p>技能是一个包含 <code>SKILL.md</code> 的目录。创建一个简单的示例：</p>
+
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">SKILL.md</span></div>
+        <pre><code>---
+name: my-python-style
+description: 当编写或审查 Python 代码时使用此技能。
+---
+
+# Python 代码风格指南
+
+- 使用 type hints 标注所有函数
+- 优先使用 dataclass 而非普通类
+- 使用 ruff 进行格式化和 lint
+- 行宽上限 100 字符</code></pre>
+      </div>
+
+      <p>技能命令：<code>/skills</code>（列出）、<code>/skill &lt;name&gt;</code>（激活）、<code>/skill new</code>（创建）、<code>/skill install github:&lt;owner&gt;/&lt;repo&gt;</code>（社区安装）。</p>
+
+      <h2 id="mcp">MCP 服务器</h2>
+      <p>DeepSeek TUI 支持 <strong>Model Context Protocol (MCP)</strong>，可以连接外部工具服务器来扩展能力。</p>
+
+      <h3>配置示例</h3>
+      <p>在 <code>~/.deepseek/mcp.json</code> 中配置：</p>
+
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">mcp.json</span></div>
+        <pre><code>{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/me"]
+    },
+    "sqlite": {
+      "command": "uvx",
+      "args": ["mcp-server-sqlite", "--db-path", "./data.db"]
+    }
+  }
+}</code></pre>
+      </div>
+
+      <p>配置后，MCP 服务器的工具会自动注册为 <code>mcp_&lt;server&gt;_&lt;tool&gt;</code> 格式。使用 <code>deepseek mcp list</code> 查看已配置的服务器，<code>deepseek mcp validate</code> 验证连接。</p>
+
+      <h2 id="github">GitHub 集成</h2>
+      <p>DeepSeek TUI 与 GitHub 集成，用于 Issue 跟踪、PR 审查和结构化验收工作流。</p>
+
+      <h3>可用操作</h3>
+      <ul>
+        <li><strong>github_issue_context</strong>：读取 Issue 正文和评论</li>
+        <li><strong>github_pr_context</strong>：读取 PR 及 diff 和审查状态</li>
+        <li><strong>github_comment</strong>：发布有据可查的评论</li>
+        <li><strong>github_close_issue</strong>：附验收证据关闭 Issue</li>
+      </ul>
+
+      <p>所有写操作都需要结构化验收证据——你无法在没有证明工作完成的情况下关闭 Issue。</p>
+
+      <h2 id="memory">记忆系统</h2>
+      <p>DeepSeek TUI 支持<strong>跨会话持久化记忆</strong>。启用后，Agent 会记住你的偏好和重要决策，在后续会话中自动引用。</p>
+
+      <h3>启用方式</h3>
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">Shell</span></div>
+        <pre><code># 设置环境变量启用记忆
+$ export DEEPSEEK_MEMORY=on
+
+# 或在 config.toml 中配置
+# [memory]
+# enabled = true</code></pre>
+      </div>
+      <p>记忆文件存储在 <code>~/.deepseek/memories/</code>，以项目为维度组织。Agent 会在相关任务时自动调用 <code>note</code> 工具记录重要信息。</p>
+
+      <h2 id="cost">成本与模型</h2>
+      <p>DeepSeek TUI 提供<strong>实时成本跟踪</strong>，每轮和会话级别的 token 使用量和费用估算，以及缓存命中/未命中明细。</p>
+
+      <table>
+        <tr><th>模型</th><th>上下文</th><th>输入（缓存命中）</th><th>输入（缓存未命中）</th><th>输出</th></tr>
+        <tr><td>deepseek-v4-pro</td><td>1M</td><td>$0.003625/1M*</td><td>$0.435/1M*</td><td>$0.87/1M*</td></tr>
+        <tr><td>deepseek-v4-flash</td><td>1M</td><td>$0.0028/1M</td><td>$0.14/1M</td><td>$0.28/1M</td></tr>
+      </table>
+
+      <p><small>* Pro 价格含限时 75% 折扣（有效期至 2026-05-31 15:59 UTC）。请以 <a href="https://api-docs.deepseek.com/zh-cn/quick_start/pricing" target="_blank">官方定价页</a> 为准。</small></p>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💰 成本提示</div>
+        <p>TUI 头部显示实时成本芯片。会话结束时查看总费用。使用缓存感知工作流（追加而非重排）可将缓存命中率保持在 80% 以上，大幅降低成本。</p>
+      </div>
+
+      <h2 id="checklists">清单与计划</h2>
+      <p>DeepSeek TUI 的规划系统使复杂工作可见且可跟踪。侧边栏显示 Plan / Todos / Tasks / Agents，让你始终了解当前进展。</p>
+
+      <h3>规划工具</h3>
+      <ul>
+        <li><strong>update_plan</strong>：高层策略（3-6 个阶段）</li>
+        <li><strong>checklist_write</strong>：当前阶段下的细粒度叶子任务</li>
+        <li><strong>checklist_update</strong>：将任务标记为进行中或已完成</li>
+      </ul>
+
+      <h3>最佳实践</h3>
+      <p>在开始工作之前始终创建 <code>checklist_write</code>。即使有自动批准，可见的跟踪也能展示工作的完整性，并帮助用户跟随你的进度。</p>
+
+      <nav class="page-nav">
+        <a href="/zh/core-concepts.html" class="page-nav-prev">核心概念</a>
+        <a href="/zh/best-practices.html" class="page-nav-next">最佳实践</a>
+      </nav>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>为 DeepSeek 社区用 ❤️ 构建 · <a href="https://github.com/deepseek-ai">GitHub</a></p>
+    </div>
+  </footer>
+
+  <script src="/js/theme.js"></script>
+  <script src="/js/nav.js"></script>
+</body>
+</html>

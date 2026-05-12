@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="安装和配置 DeepSeek TUI。终端 AI 编程助手的入门第一步。">
+  <title>快速入门 — DeepSeek TUI 教程</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/layout.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <button id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="切换导航" aria-expanded="false">
+          <span class="nav-toggle-icon">☰</span>
+        </button>
+        <a href="/zh/" class="header-logo">
+          <span class="logo-icon">🐋</span>
+          <span>DeepSeek TUI</span><span class="header-tagline">终端 AI 代理</span>
+        </a>
+      </div>
+      <div class="header-right">
+        <div class="lang-switch">
+          <a href="/en/getting-started.html">EN</a>
+          <span class="lang-sep">/</span>
+          <a href="/zh/getting-started.html" class="active" aria-current="page">中文</a>
+        </div>
+        <button id="theme-toggle" class="theme-toggle" aria-label="切换深色模式">
+          <span class="theme-icon">🌙</span>
+          <span class="theme-label">深色</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <aside id="sidebar" class="sidebar">
+      <nav class="sidebar-nav" aria-label="章节导航">
+        <div class="nav-section">
+          <div class="nav-section-title">快速入门</div>
+          <ul>
+            <li><a href="/zh/getting-started.html" class="active">概述</a></li>
+            <li><a href="#installation">安装</a></li>
+            <li><a href="#configuration">配置</a></li>
+            <li><a href="#first-session">首次使用</a></li>
+            <li><a href="#api-key">API Key 设置</a></li>
+            <li><a href="#workspace">工作空间模型</a></li>
+            <li><a href="#commands">命令速查</a></li>
+            <li><a href="#troubleshooting">问题排查</a></li>
+          </ul>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">目录</div>
+          <ul>
+            <li><a href="/zh/getting-started.html">快速入门</a></li>
+            <li><a href="/zh/core-concepts.html">核心概念</a></li>
+            <li><a href="/zh/features.html">功能指南</a></li>
+            <li><a href="/zh/hands-on.html">实战教程</a></li>
+            <li><a href="/zh/best-practices.html">最佳实践</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-header">
+        <p class="breadcrumb">
+          <a href="/zh/">首页</a> <span class="breadcrumb-sep">/</span> 快速入门
+        </p>
+        <h1>快速入门</h1>
+        <p>几分钟内完成安装、配置并启动你的第一个 DeepSeek TUI 会话。</p>
+      </div>
+
+      <!-- Overview -->
+      <h2>什么是 DeepSeek TUI？</h2>
+      <p>
+        DeepSeek TUI 是一个基于终端的 AI 编程助手，由 DeepSeek V4 模型驱动。
+        它直接运行在你的终端中，为你提供一个能够：
+      </p>
+      <ul>
+        <li><strong>读写文件</strong>：在项目工作空间中操作文件</li>
+        <li><strong>执行 Shell 命令</strong>：运行测试、构建和诊断命令</li>
+        <li><strong>搜索和导航</strong>：使用结构化工具浏览代码库</li>
+        <li><strong>分解复杂任务</strong>：拆分为计划、清单和子代理工作流</li>
+        <li><strong>自主运行</strong>：在 YOLO 模式下全自动，或在 Plan 模式下协作</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <div class="callout-title">🖥️ TUI = 终端用户界面</div>
+        <p>不同于基于网页的 AI 工具，DeepSeek TUI 完全运行在终端中。这意味着它拥有直接的文件系统访问权限、Shell 集成能力，并自然地融入你现有的 Unix 工作流。</p>
+      </div>
+
+      <!-- Installation -->
+      <h2 id="installation">安装</h2>
+
+      <h3>Linux 和 macOS</h3>
+
+      <h4>通过 Cargo 安装</h4>
+      <div class="code-example">
+        <div class="code-example-header">
+          <span class="code-label">Shell</span>
+          <button class="copy-btn" onclick="navigator.clipboard.writeText('cargo install deepseek-tui-cli --locked')">复制</button>
+        </div>
+        <pre><code>$ cargo install deepseek-tui-cli --locked
+$ deepseek</code></pre>
+      </div>
+
+      <h4>通过 npm 安装</h4>
+      <div class="code-example">
+        <div class="code-example-header">
+          <span class="code-label">Shell</span>
+          <button class="copy-btn" onclick="navigator.clipboard.writeText('npm i -g deepseek-tui')">复制</button>
+        </div>
+        <pre><code>$ npm i -g deepseek-tui
+# 首次运行将自动设置 ~/.deepseek/</code></pre>
+      </div>
+
+      <p>需要 Rust 1.88+ 或 Node >=18。</p>
+
+      <h4>通过 Homebrew 安装（macOS）</h4>
+      <div class="code-example">
+        <div class="code-example-header">
+          <span class="code-label">Shell</span>
+          <button class="copy-btn" onclick="navigator.clipboard.writeText('brew tap Hmbown/deepseek-tui && brew install deepseek-tui')">复制</button>
+        </div>
+        <pre><code>$ brew tap Hmbown/deepseek-tui
+$ brew install deepseek-tui</code></pre>
+      </div>
+
+      <h4>直接下载（无需包管理器）</h4>
+      <p>从 <a href="https://github.com/Hmbown/DeepSeek-TUI/releases" target="_blank">GitHub Releases</a> 下载预编译二进制文件。支持 Linux x64/ARM64、macOS x64/ARM64、Windows x64。</p>
+
+      <h4>通过 Docker 运行</h4>
+      <div class="code-example">
+        <div class="code-example-header">
+          <span class="code-label">Shell</span>
+          <button class="copy-btn" onclick="navigator.clipboard.writeText('docker run --rm -it -e DEEPSEEK_API_KEY -v "$PWD:/workspace" ghcr.io/hmbown/deepseek-tui:latest')">复制</button>
+        </div>
+        <pre><code>$ docker run --rm -it \
+    -e DEEPSEEK_API_KEY \
+    -v "$PWD:/workspace" \
+    ghcr.io/hmbown/deepseek-tui:latest</code></pre>
+      </div>
+
+      <h3>Windows</h3>
+      <h4>WSL2（推荐）</h4>
+      <p>在 WSL2 终端内按照 Linux 安装步骤操作即可，原生运行。</p>
+
+      <h4>Scoop 包管理器</h4>
+      <div class="code-example">
+        <div class="code-example-header">
+          <span class="code-label">PowerShell</span>
+          <button class="copy-btn" onclick="navigator.clipboard.writeText('scoop update && scoop install deepseek-tui')">复制</button>
+        </div>
+        <pre><code>$ scoop update
+$ scoop install deepseek-tui
+$ deepseek --version</code></pre>
+      </div>
+
+      <div class="callout callout-info">
+        <div class="callout-title">🇨🇳 国内用户</div>
+        <p>npm 安装慢时使用 <code>--registry=https://registry.npmmirror.com</code>。Cargo 用户可配置<a href="https://mirrors.tuna.tsinghua.edu.cn/help/crates.io-index.git/" target="_blank">清华镜像</a>加速。</p>
+      </div>
+
+      <h3>验证安装</h3>
+      <div class="code-example">
+        <div class="code-example-header">
+          <span class="code-label">Shell</span>
+          <button class="copy-btn" onclick="navigator.clipboard.writeText('deepseek --version')">复制</button>
+        </div>
+        <pre><code>$ deepseek --version
+deepseek-tui 0.8.31</code></pre>
+      </div>
+
+      <!-- API Key Setup -->
+      <h2 id="api-key">API Key 设置</h2>
+      <p>首次启动时会提示输入 DeepSeek API Key（<a href="https://platform.deepseek.com/api_keys" target="_blank">在此获取</a>）。也可以提前设置：</p>
+
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">Shell</span></div>
+        <pre><code># 保存到配置文件（推荐，跨目录生效）
+$ deepseek auth set --provider deepseek
+
+# 查看当前认证状态
+$ deepseek auth status
+
+# 或使用环境变量（适合非交互式 Shell）
+$ export DEEPSEEK_API_KEY="sk-your-key-here"
+
+# 检查配置是否正常
+$ deepseek doctor</code></pre>
+      </div>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💡 认证优先级</div>
+        <p>保存到配置文件的 Key 优先级最高，也最易于轮换。使用 <code>deepseek auth clear --provider deepseek</code> 可移除已保存的 Key。如果 <code>deepseek doctor</code> 报告 Key 被拒绝，检查是否有过期环境变量覆盖。</p>
+      </div>
+
+      <!-- Configuration -->
+      <h2 id="configuration">配置</h2>
+      <p>DeepSeek TUI 的配置存储在以下两个关键位置：</p>
+
+      <div class="code-example">
+        <div class="code-example-header">
+          <span class="code-label">配置文件</span>
+        </div>
+        <pre><code>~/.deepseek/           # 主配置目录
+├── config.toml        # 核心配置
+├── instructions.md    # 自定义项目说明（自动生成）
+├── skills/            # 已安装技能
+├── memories/          # 持久化记忆存储
+└── plugins/           # 插件系统</code></pre>
+      </div>
+
+      <h3>基本设置</h3>
+      <p>编辑 <code>~/.deepseek/config.toml</code>：</p>
+
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">config.toml</span></div>
+        <pre><code>[api]
+key = "sk-..."
+base_url = "https://api.deepseek.com"
+model = "deepseek-v4-pro"  # 默认；deepseek-v4-flash 为快速/子代理选项
+
+[ui]
+default_mode = "agent"     # plan | agent | yolo
+approval_mode = "suggest"  # suggest | auto | never
+reasoning_effort = "high"  # off | high | max</code></pre>
+      </div>
+
+      <h3>项目说明文件</h3>
+      <p>
+        项目根目录下的 <code>instructions.md</code> 文件自动生成，用于告知 DeepSeek TUI
+        你的项目结构、语言偏好和工作空间边界。你可以编辑它以添加项目特定的指导。
+      </p>
+
+      <!-- First Session -->
+      <h2 id="first-session">首次使用</h2>
+
+      <ol class="step-list">
+        <li>
+          <strong>进入你的项目目录</strong>
+          <div class="code-example">
+            <div class="code-example-header"><span class="code-label">Shell</span></div>
+            <pre><code>$ cd ~/my-project</code></pre>
+          </div>
+        </li>
+        <li>
+          <strong>启动 DeepSeek TUI</strong>
+          <div class="code-example">
+            <div class="code-example-header"><span class="code-label">Shell</span></div>
+            <pre><code>$ deepseek</code></pre>
+          </div>
+        </li>
+        <li>
+          <strong>编写你的第一条提示词</strong>
+          <p>界面会在终端中打开。尝试一个简单任务来熟悉操作：</p>
+          <div class="code-example">
+            <div class="code-example-header"><span class="code-label">DeepSeek TUI</span></div>
+            <pre><code>总结项目结构和关键文件。</code></pre>
+          </div>
+        </li>
+      </ol>
+
+      <div class="callout callout-success">
+        <div class="callout-title">✅ 首次会话成功</div>
+        <p>Agent 会读取你的项目文件，返回分析结果，然后等待你的下一条指令。你现在已经开始了与 AI 的结对编程。</p>
+      </div>
+
+      <h3>更多启动方式</h3>
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">Shell</span></div>
+        <pre><code># 交互式 TUI（默认）
+$ deepseek
+
+# 单次提问（非交互模式）
+$ deepseek "解释这个函数的作用"
+
+# 指定模型
+$ deepseek --model deepseek-v4-flash "总结一下 README"
+
+# 自动选择模型和推理深度（推荐新手使用）
+$ deepseek --model auto "修复这个 bug"
+
+# 全自动模式（自动批准所有操作，谨慎使用）
+$ deepseek --yolo
+
+# 查看可用模型
+$ deepseek models
+
+# 列出已保存的会话
+$ deepseek sessions
+
+# 恢复上次会话
+$ deepseek resume --last</code></pre>
+      </div>
+
+      <!-- Workspace Model -->
+      <h2 id="workspace">工作空间模型</h2>
+      <p>
+        DeepSeek TUI 在<strong>工作空间</strong>中运行——即你启动它的目录。
+        所有文件操作都相对于此根目录。这是一个安全边界：
+        在没有显式信任模式的情况下，工具无法读取或写入工作空间之外的文件。
+      </p>
+
+      <h3>关键概念</h3>
+      <ul>
+        <li><strong>工作目录</strong>：传递给 <code>deepseek</code> 或通过 <code>cd</code> 设置的目录</li>
+        <li><strong>工作空间根目录</strong>：顶层项目目录</li>
+        <li><strong>活跃路径</strong>：Agent 当前关注的文件</li>
+        <li><strong>信任模式</strong>：需要时授予工作空间之外的访问权限</li>
+      </ul>
+
+      <div class="callout callout-warning">
+        <div class="callout-title">⚠️ 安全提示</div>
+        <p>默认情况下，DeepSeek TUI 将文件访问限制在工作空间内。仅在需要跨项目操作时启用信任模式，并仔细审查工具调用。</p>
+      </div>
+
+      <h3>沙箱保护</h3>
+      <p>DeepSeek TUI 利用操作系统级沙箱机制限制工具执行范围：</p>
+      <ul>
+        <li><strong>Linux</strong>：landlock</li>
+        <li><strong>macOS</strong>：seatbelt</li>
+        <li><strong>Windows</strong>：AppContainer / restricted tokens</li>
+      </ul>
+
+      <!-- Command Reference -->
+      <h2 id="commands">常用命令速查</h2>
+
+      <table>
+        <tr><th>命令</th><th>用途</th></tr>
+        <tr><td><code>deepseek</code></td><td>启动交互式 TUI</td></tr>
+        <tr><td><code>deepseek "问题"</code></td><td>单次提问（非交互）</td></tr>
+        <tr><td><code>deepseek --model auto</code></td><td>自动选择模型和推理深度</td></tr>
+        <tr><td><code>deepseek --yolo</code></td><td>全自动模式（自动批准）</td></tr>
+        <tr><td><code>deepseek auth set</code></td><td>设置 API Key</td></tr>
+        <tr><td><code>deepseek doctor</code></td><td>诊断连接和配置</td></tr>
+        <tr><td><code>deepseek models</code></td><td>查看可用模型列表</td></tr>
+        <tr><td><code>deepseek sessions</code></td><td>列出已保存的会话</td></tr>
+        <tr><td><code>deepseek resume --last</code></td><td>恢复最近的会话</td></tr>
+        <tr><td><code>deepseek update</code></td><td>检查并应用更新</td></tr>
+        <tr><td><code>deepseek serve --http</code></td><td>启动 HTTP/SSE API 服务</td></tr>
+        <tr><td><code>deepseek mcp list</code></td><td>列出 MCP 服务器</td></tr>
+      </table>
+
+      <!-- Troubleshooting -->
+      <h2 id="troubleshooting">常见问题排查</h2>
+
+      <h3>API Key 被拒绝</h3>
+      <p><strong>症状</strong>：<code>deepseek doctor</code> 报告 Key 无效或被拒绝。</p>
+      <ul>
+        <li>运行 <code>deepseek auth status</code> 查看当前认证来源</li>
+        <li>检查是否有过期环境变量 <code>DEEPSEEK_API_KEY</code> 覆盖了配置</li>
+        <li>运行 <code>deepseek auth set --provider deepseek</code> 重新设置</li>
+        <li>确认 Key 来自 <a href="https://platform.deepseek.com/api_keys" target="_blank">DeepSeek 平台</a>，未过期</li>
+      </ul>
+
+      <h3>命令找不到（command not found）</h3>
+      <p><strong>症状</strong>：终端提示 <code>deepseek: command not found</code>。</p>
+      <ul>
+        <li>Cargo 安装：确认 <code>~/.cargo/bin</code> 在 <code>$PATH</code> 中</li>
+        <li>npm 安装：确认 npm 全局 bin 目录在 <code>$PATH</code> 中（<code>npm bin -g</code> 查看）</li>
+        <li>重新打开终端或运行 <code>source ~/.bashrc</code></li>
+      </ul>
+
+      <h3>Agent 输出不符合预期</h3>
+      <p><strong>症状</strong>：Agent 生成的代码与你的需求不符。</p>
+      <ul>
+        <li><strong>提示词不够具体</strong>：参考 <a href="/zh/best-practices.html#prompting">提示词工程</a> 改进描述</li>
+        <li><strong>上下文过长</strong>：运行 <code>/compact</code> 压缩后重试</li>
+        <li><strong>模式不对</strong>：Plan 模式不能写文件，确认在 Agent 或 YOLO 模式</li>
+      </ul>
+
+      <h3>操作失误如何撤销</h3>
+      <ul>
+        <li><strong>撤销最近一轮</strong>：在对话中输入 <code>/restore</code> 回退文件</li>
+        <li><strong>撤销指定轮次</strong>：使用 <code>revert_turn</code> 工具</li>
+        <li><strong>Git 保护</strong>：操作不会影响你的 <code>.git</code> 目录，可随时 <code>git diff</code> 查看变化</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <div class="callout-title">🩺 诊断命令</div>
+        <p>遇到问题时先运行 <code>deepseek doctor</code> — 它会检查配置、连接性和常见配置错误，并给出修复建议。</p>
+      </div>
+
+      <!-- Page Navigation -->
+      <nav class="page-nav">
+        <a href="/zh/" class="page-nav-prev">首页</a>
+        <a href="/zh/core-concepts.html" class="page-nav-next">核心概念</a>
+      </nav>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>为 DeepSeek 社区用 ❤️ 构建 · <a href="https://github.com/deepseek-ai">GitHub</a></p>
+    </div>
+  </footer>
+
+  <script src="/js/theme.js"></script>
+  <script src="/js/nav.js"></script>
+</body>
+</html>

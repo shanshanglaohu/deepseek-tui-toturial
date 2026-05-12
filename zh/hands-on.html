@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DeepSeek TUI 实战教程：从零构建个人作品集网站。完整的端到端项目指南。">
+  <title>实战教程 — DeepSeek TUI 教程</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/layout.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <button id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="切换导航" aria-expanded="false">
+          <span class="nav-toggle-icon">☰</span>
+        </button>
+        <a href="/zh/" class="header-logo"><span class="logo-icon">🐋</span><span>DeepSeek TUI</span><span class="header-tagline">终端 AI 代理</span></a>
+      </div>
+      <div class="header-right">
+        <div class="lang-switch">
+          <a href="/en/hands-on.html">EN</a>
+          <span class="lang-sep">/</span>
+          <a href="/zh/hands-on.html" class="active" aria-current="page">中文</a>
+        </div>
+        <button id="theme-toggle" class="theme-toggle" aria-label="切换深色模式">
+          <span class="theme-icon">🌙</span><span class="theme-label">深色</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <aside id="sidebar" class="sidebar">
+      <nav class="sidebar-nav" aria-label="章节导航">
+        <div class="nav-section">
+          <div class="nav-section-title">实战教程</div>
+          <ul>
+            <li><a href="/zh/hands-on.html" class="active">概述</a></li>
+            <li><a href="#step1">准备工作</a></li>
+            <li><a href="#step2">生成骨架</a></li>
+            <li><a href="#step3">审查与迭代</a></li>
+            <li><a href="#step4">添加功能</a></li>
+            <li><a href="#step5">部署上线</a></li>
+            <li><a href="#tips">使用技巧总结</a></li>
+          </ul>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">目录</div>
+          <ul>
+            <li><a href="/zh/getting-started.html">快速入门</a></li>
+            <li><a href="/zh/core-concepts.html">核心概念</a></li>
+            <li><a href="/zh/features.html">功能指南</a></li>
+            <li><a href="/zh/hands-on.html">实战教程</a></li>
+            <li><a href="/zh/best-practices.html">最佳实践</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-header">
+        <p class="breadcrumb"><a href="/zh/">首页</a> <span class="breadcrumb-sep">/</span> 实战教程</p>
+        <h1>实战教程：构建个人作品集网站</h1>
+        <p>全程使用 DeepSeek TUI，从零开始创建一个完整的单页个人作品集网站，并部署到线上。</p>
+      </div>
+
+      <div class="callout callout-info">
+        <div class="callout-title">🎯 学完本章你将掌握</div>
+        <ul>
+          <li>如何用自然语言描述项目需求让 DeepSeek 生成完整代码</li>
+          <li>如何在 Agent 模式和 Plan 模式之间切换完成不同任务</li>
+          <li>如何审查、反馈、迭代 AI 生成的代码</li>
+          <li>如何从零到部署完成一个完整项目</li>
+        </ul>
+      </div>
+
+      <!-- Step 1 -->
+      <h2 id="step1">第一步：准备工作</h2>
+
+      <h3>1.1 创建项目目录</h3>
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">终端</span></div>
+        <pre><code>$ mkdir ~/my-portfolio
+$ cd ~/my-portfolio</code></pre>
+      </div>
+
+      <h3>1.2 启动 DeepSeek TUI</h3>
+      <p>使用 <strong>Agent 模式</strong>启动（默认模式，适合有写入操作的任务）：</p>
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">终端</span></div>
+        <pre><code>$ deepseek</code></pre>
+      </div>
+
+      <h3>1.3 描述你的项目</h3>
+      <p>这是最重要的步骤。<strong>提示词越具体，结果越精准</strong>。复制下面的提示词：</p>
+
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">DeepSeek TUI — 第一条提示词</span></div>
+        <pre><code>我要创建一个单页个人作品集网站。请按以下要求创建：
+
+项目结构：
+- index.html（主页面）
+- css/style.css（样式）
+- js/main.js（脚本）
+
+页面内容：
+1. 导航栏：固定在顶部，包含"首页、关于我、技能、项目、联系"五个链接
+2. 英雄区：名字（用"张三"做占位）、一句话简介、一个 CTA 按钮
+3. 关于我：两段介绍文字（写占位内容）
+4. 技能区：6 个技能卡片（HTML、CSS、JavaScript、Python、Git、Linux），每个带图标
+5. 项目区：3 个项目卡片，每个包含标题、描述和技术标签
+6. 联系方式：邮箱和社交媒体链接
+
+设计要求：
+- 深色主题（背景 #0e0e10，文字浅色）
+- 响应式布局（桌面和手机都好看）
+- 使用 CSS 变量管理颜色
+- 滚动到对应区域时导航高亮
+
+请先列出文件结构计划，经我确认后再生成代码。</code></pre>
+      </div>
+
+      <div class="callout callout-success">
+        <div class="callout-title">💬 提示词拆解</div>
+        <p>注意这个提示词的结构：<strong>明确输出的文件列表 + 逐区域描述 + 设计约束 + 先计划后执行</strong>。最后一句"先列计划"让 Agent 在写代码前展示结构，给你审查机会——避免生成后发现方向不对。</p>
+      </div>
+
+      <h3>1.4 确认计划</h3>
+      <p>Agent 会返回文件结构计划并征求你的确认。审查后回复"确认"或"可以"让其开始生成代码。</p>
+
+      <!-- Step 2 -->
+      <h2 id="step2">第二步：生成骨架</h2>
+
+      <p>Agent 会依次创建 <code>index.html</code>、<code>css/style.css</code>、<code>js/main.js</code>。</p>
+
+      <h3>2.1 预览成果</h3>
+      <p>生成完成后，在浏览器中打开看看效果：</p>
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">终端（WSL）</span></div>
+        <pre><code>$ cmd.exe /c start index.html</code></pre>
+      </div>
+      <p>在 macOS 上使用 <code>open index.html</code>；Linux 用 <code>xdg-open index.html</code>。</p>
+
+      <h3>2.2 如果效果不对……</h3>
+      <p>直接告诉 Agent 哪里需要改。例如：</p>
+
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">DeepSeek TUI</span></div>
+        <pre><code>导航栏的背景色太深了，改成半透明效果。另外英雄区的文字大小在手机上太大，请缩小。</code></pre>
+      </div>
+
+      <!-- Step 3 -->
+      <h2 id="step3">第三步：审查与迭代</h2>
+
+      <h3>3.1 切换到 Plan 模式做代码审查</h3>
+      <p>按 <kbd>Tab</kbd> 切换到 <strong>Plan 模式</strong>（只读），让 Agent 审查代码而不做修改：</p>
+
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">DeepSeek TUI（Plan 模式）</span></div>
+        <pre><code>审查 css/style.css 的响应式设计。检查是否有：
+1. 遗漏的断点
+2. 不一致的间距
+3. 可访问性问题（对比度不足等）
+
+只报告问题，不要修改。</code></pre>
+      </div>
+
+      <div class="callout callout-info">
+        <div class="callout-title">🔄 模式切换策略</div>
+        <p>审查用 <strong>Plan 模式</strong>（安全，不误改）→ 修改用 <strong>Agent 模式</strong>（有审批门禁）→ 批量简单任务用 <strong>YOLO 模式</strong>（快速）。按 <kbd>Tab</kbd> 循环切换。</p>
+      </div>
+
+      <h3>3.2 替换占位内容</h3>
+      <p>让 Agent 帮你批量替换占位文字：</p>
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">DeepSeek TUI</span></div>
+        <pre><code>把页面中所有"张三"替换为我的真实姓名。把技能描述、项目描述、关于我文字都换成更自然的占位内容——不要用"Lorem ipsum"。</code></pre>
+      </div>
+
+      <!-- Step 4 -->
+      <h2 id="step4">第四步：添加高级功能</h2>
+
+      <h3>4.1 添加暗色/亮色模式切换</h3>
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">DeepSeek TUI</span></div>
+        <pre><code>给网站添加暗色/亮色主题切换功能：
+- 导航栏右侧放一个切换按钮（☀️/🌙）
+- 点击切换 data-theme 属性（dark ↔ light）
+- 定义两套 CSS 变量
+- 用 localStorage 记住用户选择
+- 修改 js/main.js 和 css/style.css</code></pre>
+      </div>
+
+      <h3>4.2 添加平滑滚动和动画</h3>
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">DeepSeek TUI</span></div>
+        <pre><code>增强用户体验：
+- 点击导航链接时平滑滚动到对应区域
+- 滚动到可视区域时，技能卡片和项目卡片用淡入效果出现
+- 使用 IntersectionObserver 实现（不要引入第三方库）</code></pre>
+      </div>
+
+      <div class="callout callout-success">
+        <div class="callout-title">⚡ YOLO 模式提速</div>
+        <p>当你在修改一个自己完全理解的文件、且改动方向明确时，按 <kbd>Tab</kbd> 切到 YOLO 模式可以跳过审批步骤，大大提速。完成后再切回 Agent 模式。</p>
+      </div>
+
+      <!-- Step 5 -->
+      <h2 id="step5">第五步：审查与部署</h2>
+
+      <h3>5.1 最终审查</h3>
+      <p>切回 Plan 模式做最终检查：</p>
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">DeepSeek TUI（Plan 模式）</span></div>
+        <pre><code>对整个项目做最终审查。检查：
+- 所有链接是否有效
+- 移动端在 375px 宽度下的表现
+- 图片 alt 文本是否齐全
+- 页面加载性能（是否有阻塞渲染的资源）
+列出发现的所有问题。</code></pre>
+      </div>
+
+      <h3>5.2 初始化 Git 并提交</h3>
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">终端</span></div>
+        <pre><code>$ git init
+$ git add .
+$ git commit -m "初始化个人作品集网站"</code></pre>
+      </div>
+
+      <h3>5.3 部署到 GitHub Pages（免费）</h3>
+      <ol>
+        <li>在 GitHub 创建新仓库 <code>my-portfolio</code></li>
+        <li>推送代码：</li>
+      </ol>
+      <div class="code-example">
+        <div class="code-example-header"><span class="code-label">终端</span></div>
+        <pre><code>$ git remote add origin git@github.com:你的用户名/my-portfolio.git
+$ git branch -M main
+$ git push -u origin main</code></pre>
+      </div>
+      <ol start="3">
+        <li>在 GitHub 仓库 → Settings → Pages → Source 选择 <code>main</code> 分支</li>
+        <li>几分钟后访问 <code>https://你的用户名.github.io/my-portfolio</code></li>
+      </ol>
+
+      <div class="callout callout-success">
+        <div class="callout-title">✅ 恭喜！</div>
+        <p>你已经用 DeepSeek TUI 从零构建并部署了一个完整的个人作品集网站。整个过程中，你编写的是需求描述而非代码——这是 AI 辅助开发的核心工作流。</p>
+      </div>
+
+      <!-- Tips -->
+      <h2 id="tips">使用技巧总结</h2>
+
+      <h3>高效提示词的五个要素</h3>
+      <table>
+        <tr><th>要素</th><th>示例</th></tr>
+        <tr><td>1. 输出物</td><td>"创建三个文件：index.html、style.css、main.js"</td></tr>
+        <tr><td>2. 逐区域描述</td><td>"导航栏包含……英雄区包含……技能区包含……"</td></tr>
+        <tr><td>3. 设计约束</td><td>"深色主题、响应式、纯 CSS 变量"</td></tr>
+        <tr><td>4. 技术限制</td><td>"不引入第三方库、使用 IntersectionObserver"</td></tr>
+        <tr><td>5. 先计划后执行</td><td>"先列出文件结构，确认后再生成代码"</td></tr>
+      </table>
+
+      <h3>典型的迭代循环</h3>
+      <ol>
+        <li><strong>描述需求</strong> → Agent 生成代码</li>
+        <li><strong>预览结果</strong> → 浏览器查看效果</li>
+        <li><strong>反馈问题</strong> → "导航栏太暗了，改成半透明"</li>
+        <li><strong>审查代码</strong> → 切 Plan 模式检查</li>
+        <li><strong>重复 1-4</strong> 直到满意</li>
+      </ol>
+
+      <h3>模式选择速查</h3>
+      <table>
+        <tr><th>你在做什么</th><th>用哪个模式</th></tr>
+        <tr><td>探索项目、审查代码</td><td>Plan（只读，安全）</td></tr>
+        <tr><td>写代码、改文件、日常开发</td><td>Agent（默认，有审批）</td></tr>
+        <tr><td>批量替换、信任的重复操作</td><td>YOLO（快速，无审批）</td></tr>
+      </table>
+
+      <nav class="page-nav">
+        <a href="/zh/features.html" class="page-nav-prev">功能指南</a>
+        <a href="/zh/best-practices.html" class="page-nav-next">最佳实践</a>
+      </nav>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>为 DeepSeek 社区用 ❤️ 构建 · <a href="https://github.com/deepseek-ai">GitHub</a></p>
+    </div>
+  </footer>
+
+  <script src="/js/theme.js"></script>
+  <script src="/js/nav.js"></script>
+</body>
+</html>
