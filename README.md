@@ -13,7 +13,8 @@
 ## 快速查看
 
 ```bash
-cd deepseek-apps/first_app
+git clone https://github.com/shanshanglaohu/deepseek-tui-toturial.git
+cd deepseek-tui-toturial
 
 # 方式一：直接浏览器打开
 cmd.exe /c start index.html    # Windows
@@ -27,8 +28,8 @@ npx serve .
 ## 目录结构
 
 ```
-first_app/
-├── index.html                  # 入口 → 自动跳转语言
+deepseek-tui-toturial/
+├── index.html                  # 入口 → 语言选择
 ├── zh/                         # 中文版
 │   ├── index.html              # 首页
 │   ├── getting-started.html    # 快速入门
